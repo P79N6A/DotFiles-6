@@ -58,7 +58,7 @@ call plug#end()
 " }}}
 
 " General {{{
-set background=dark             " Assume a dark background
+set background=light             " Assume a dark background
 if CheckPlug('vim-colorschemes')
   color monochrome
   " color Tomorrow-Night-Bright
@@ -237,6 +237,12 @@ endif
 " undotree {{{
 if CheckPlug('undotree')
   nnoremap <Leader>ut :UndotreeToggle<Cr>
+endif
+" }}}
+
+" supertab {{{
+if CheckPlug('supertab')
+  let g:SuperTabDefaultCompletionType = "<c-n>"
 endif
 " }}}
 
