@@ -1,0 +1,63 @@
+# Path to your oh-my-zsh installation.
+export ZSH=/Users/zhiruili/.oh-my-zsh
+
+ZSH_THEME="robbyrussell"
+DEFAULT_USER="zhiruili"
+
+# Disable marking untracked files under VCS as dirty.
+# This makes repository status check for large repositories much, much faster.
+DISABLE_UNTRACKED_FILES_DIRTY="false"
+
+# Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
+# Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
+# Example format: plugins=(rails git textmate ruby lighthouse)
+# Add wisely, as too many plugins slow down shell startup.
+plugins=(git)
+
+source $ZSH/oh-my-zsh.sh
+
+# User configuration
+
+# You may need to manually set your language environment
+# export LANG=en_US.UTF-8
+
+# Preferred editor for local and remote sessions
+# if [[ -n $SSH_CONNECTION ]]; then
+#   export EDITOR='vim'
+# else
+#   export EDITOR='mvim'
+# fi
+
+# Compilation flags
+# export ARCHFLAGS="-arch x86_64"
+
+# ssh
+# export SSH_KEY_PATH="~/.ssh/rsa_id"
+
+# Set personal aliases, overriding those provided by oh-my-zsh libs,
+# plugins, and themes. Aliases can be placed here, though oh-my-zsh
+# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# For a full list of active aliases, run `alias`.
+#
+# Example aliases
+# alias zshconfig="mate ~/.zshrc"
+# alias ohmyzsh="mate ~/.oh-my-zsh"
+alias typora="open -a typora"
+alias finder="open -a finder"
+alias python="python3"
+
+# stack
+export PATH=$PATH:$HOME/.local/bin
+# cargo
+export PATH=$PATH:$HOME/.cargo/bin
+# go-lang
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+# proxy settings
+export http_proxy=http://127.0.0.1:1087;
+export https_proxy=http://127.0.0.1:1087;
+export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1087"
+
+# temp path to depot_tools for chromium project
+# export PATH="$PATH:/Users/zhiruili/Projects/depot_tools";

@@ -1,0 +1,118 @@
+" Environment {{{
+
+  " Identify platform {{{
+    silent function! OSX()
+      return has('macunix')
+    endfunction
+    silent function! LINUX()
+      return has('unix') && !has('macunix') && !has('win32unix')
+    endfunction
+    silent function! WINDOWS()
+      return  (has('win32') || has('win64'))
+    endfunction
+  " }}}
+
+  " Basics {{{
+    set nocompatible        " Must be first line
+    if !WINDOWS()
+      set shell=/bin/sh
+    endif
+  " }}}
+
+  " Windows Compatible {{{
+    "On Windows, also use'.vim'instead of'vimfiles'; this makes synchronization
+    " across (heterogeneous) systems easier.
+    if WINDOWS()
+      set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    endif
+  " }}}
+
+" }}}
+
+" General {{{
+  set background=dark         " Assume a dark background
+  filetype plugin indent on   " Automatically detect file types.
+  syntax on                   " Syntax highlighting
+  set mouse=a                 " Automatically enable mouse usage
+  set mousehide               " Hide the mouse cursor while typing
+  set history=1024            " Store a ton of history
+  " File encoding, chinese support
+  set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+  set termencoding=utf-8
+  set encoding=utf-8
+  scriptencoding utf-8
+" }}}
+
+" Basic key mapping {{{
+  let mapleader = ','         " Map leader key to comma
+  let maplocalleader = ' '    " Map local leader key to space
+  " Visual shifting (does not exit Visual mode)
+  vnoremap < <gv
+  vnoremap > >gv
+  " Communicating with os clipboard
+  nmap <localleader>y "*y
+  vmap <localleader>y "*y
+  nmap <localleader>d "*d
+  vmap <localleader>d "*d
+  nmap <localleader>p "*p
+  vmap <localleader>p "*p
+  " Quickly open and reload vimrc file
+  nnoremap <leader>ev :split $MYVIMRC<CR>
+  nnoremap <leader>sv :source $MYVIMRC<CR>
+" }}}
+
+" UI {{{
+  color desert                    " If the tomorrow color scheme do not exist, use desert as default.
+  " set cursorline                  " Highlight current line
+  set showmode                    " Display the current mode
+  set backspace=indent,eol,start  " Backspace for dummies
+  set linespace=0                 " No extra spaces between rows
+  set number                      " Line numbers on
+  set showmatch                   " Show matching brackets/parenthesis
+  set incsearch                   " Increment search
+  set hlsearch                    " Highlight search terms
+  set winminheight=0              " Windows can be 0 line high
+  set ignorecase                  " Case insensitive search
+  set smartcase                   " Case sensitive when uc present
+  set wildmenu                    " Show list instead of just completing
+  set wildmode=list:longest,full  " Command <Tab> completion, list matches, then longest common part, then all.
+  set whichwrap=b,s,h,l,<,>,[,]   " Backspace and cursor keys wrap too
+  set scrolljump=5                " Lines to scroll when cursor leaves screen
+  set scrolloff=3                 " Minimum lines to keep above and below cursor
+  set foldenable                  " Auto fold code
+  set list
+  " Highlight problematic whitespace
+  set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
+  if has('gui_running')
+    set guioptions=               " Remove all disturbance
+    set lines=50
+    set columns=172
+    set guifont=Menlo:h12,Dejavu_Sans_Mono:h12,Consolas:h13
+    set guicursor=n-v-c-i:block-Cursor
+    set guicursor+=n-v-c-i:blinkon0
+  else
+    if &term == 'xterm' || &term == 'screen'
+      set t_Co=256                " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
+    endif
+  endif
+" }}}
+
+" Formatting {{{
+  set nowrap                      " Do not wrap long lines
+  set textwidth=1024              " Do not break line automatically
+  set autoindent                  " Indent at the same level of the previous line
+  set shiftwidth=4                " Use indents of 4 spaces
+  set expandtab                   " Tabs are spaces, not tabs
+  set tabstop=4                   " An indentation every four columns
+  set softtabstop=4               " Let backspace delete indent
+  set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
+  set splitright                  " Puts new vsplit windows to the right of the current
+  set splitbelow                  " Puts new split windows to the bottom of the current
+  autocmd FileType haskell,scala,ruby,yml,vim setlocal expandtab shiftwidth=2 softtabstop=2
+  autocmd FileType markdown setlocal wrap
+  augroup ft_vim                  " Fold the vimrc file
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+  augroup END
+" }}}
+

@@ -1,0 +1,533 @@
+" Environment {{{
+
+  " Identify platform {{{
+    silent function! OSX()
+      return has('macunix')
+    endfunction
+    silent function! LINUX()
+      return has('unix') && !has('macunix') && !has('win32unix')
+    endfunction
+    silent function! WINDOWS()
+      return  (has('win32') || has('win64'))
+    endfunction
+  " }}}
+
+  " Basics {{{
+    set nocompatible        " Must be first line
+    if !WINDOWS()
+      set shell=/bin/sh
+    endif
+  " }}}
+
+  " Windows Compatible {{{
+    "On Windows, also use'.vim'instead of'vimfiles'; this makes synchronization
+    " across (heterogeneous) systems easier.
+    if WINDOWS()
+      set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    endif
+  " }}}
+
+" }}}
+
+" Plugin manager {{{
+  call plug#begin('~/.vim/plugged')
+
+  " Color scheme {{{
+    Plug 'flazz/vim-colorschemes'
+  " }}}
+
+  " General {{{
+    Plug 'ctrlpvim/ctrlp.vim'
+    Plug 'easymotion/vim-easymotion'
+    Plug 'fencview.vim'
+    Plug 'gcmt/wildfire.vim'
+    Plug 'junegunn/vim-easy-align'
+    Plug 'mbbill/undotree'
+    Plug 'nathanaelkane/vim-indent-guides'
+    Plug 'scrooloose/nerdtree'
+    Plug 'Shougo/vimproc.vim', {'do' : 'make'}
+    Plug 'tacahiroy/ctrlp-funky'
+    Plug 'terryma/vim-multiple-cursors'
+    Plug 'vim-airline/vim-airline'
+    Plug 'vim-airline/vim-airline-themes'
+  " }}}
+
+  " Programming {{{
+    Plug 'airblade/vim-gitgutter'
+    Plug 'DoxygenToolkit.vim'
+    Plug 'jiangmiao/auto-pairs'
+    Plug 'tpope/vim-commentary'
+    Plug 'scrooloose/syntastic'
+    Plug 'Shougo/neocomplete.vim'
+    Plug 'Shougo/neosnippet'
+    Plug 'Shougo/neosnippet-snippets'
+    Plug 'tpope/vim-fugitive'
+    Plug 'tpope/vim-surround'
+    " Plug 'w0rp/ale'
+    if executable('ctags')
+      Plug 'majutsushi/tagbar'
+    endif
+  " }}}
+
+  " Haskell {{{
+    Plug 'eagletmt/ghcmod-vim', { 'for': 'haskell' }
+    Plug 'eagletmt/neco-ghc', { 'for': 'haskell' }
+    Plug 'neovimhaskell/haskell-vim', { 'for': 'haskell' }
+    Plug 'Twinside/vim-hoogle', { 'for': 'haskell' }
+  " }}}
+
+  " Scala {{{
+    Plug 'derekwyatt/vim-scala', { 'for': 'scala' }
+  " }}}
+
+  " Markdown {{{
+    " Needed by vim-markdown plugin
+    Plug 'godlygeek/tabular'
+    Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+  "}}}
+
+  " C/C++ {{{
+    Plug 'vim-scripts/a.vim', { 'for': ['cpp', 'c'] }
+    Plug 'octol/vim-cpp-enhanced-highlight', { 'for': 'cpp' }
+  " }}}
+
+  " Rust {{{
+    Plug 'racer-rust/vim-racer', { 'for': 'rust' }
+    Plug 'rust-lang/rust.vim', { 'for': 'rust' }
+    Plug 'cespare/vim-toml'
+  " }}}
+
+  call plug#end()
+" }}}
+
+" General {{{
+  set background=light        " Assume a dark background
+  filetype plugin indent on   " Automatically detect file types.
+  syntax on                   " Syntax highlighting
+  set mouse=a                 " Automatically enable mouse usage
+  set mousehide               " Hide the mouse cursor while typing
+  set history=1024            " Store a ton of history
+  " For racer! Prevents you from saving files every time do goto-definition
+  set hidden
+  " File encoding, chinese support
+  set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+  set termencoding=utf-8
+  set encoding=utf-8
+  scriptencoding utf-8
+" }}}
+
+" Basic key mapping {{{
+  let mapleader = ','         " Map leader key to comma
+  let maplocalleader = ' '    " Map local leader key to space
+  " Visual shifting (does not exit Visual mode)
+  vnoremap < <gv
+  vnoremap > >gv
+  " Communicating with os clipboard
+  nmap <localleader>y "*y
+  vmap <localleader>y "*y
+  nmap <localleader>d "*d
+  vmap <localleader>d "*d
+  nmap <localleader>p "*p
+  vmap <localleader>p "*p
+  " Quickly open and reload vimrc file
+  nnoremap <leader>ev :split $MYVIMRC<CR>
+  nnoremap <leader>sv :source $MYVIMRC<CR>
+  " Remove trailing whitespace
+  nnoremap <leader>tw :call StripTrailingWhitespace()<CR>
+" }}}
+
+" UI {{{
+  if isdirectory(expand("~/.vim/plugged/vim-colorschemes/"))
+    " color monochrome
+    " color Tomorrow-Night-Bright
+    color Tomorrow
+  else
+    color desert                  " If the tomorrow color scheme do not exist, use desert as default.
+  endif
+  set cursorline                  " Highlight current line
+  set showmode                    " Display the current mode
+  highlight clear SignColumn      " SignColumn should match background
+  highlight clear LineNr          " Current line number row will have same background color in relative mo
+  set backspace=indent,eol,start  " Backspace for dummies
+  set linespace=0                 " No extra spaces between rows
+  set number                      " Line numbers on
+  set showmatch                   " Show matching brackets/parenthesis
+  set incsearch                   " Increment search
+  set hlsearch                    " Highlight search terms
+  set winminheight=0              " Windows can be 0 line high
+  set ignorecase                  " Case insensitive search
+  set smartcase                   " Case sensitive when uc present
+  set wildmenu                    " Show list instead of just completing
+  set wildmode=list:longest,full  " Command <Tab> completion, list matches, then longest common part, then all.
+  set whichwrap=b,s,h,l,<,>,[,]   " Backspace and cursor keys wrap too
+  set scrolljump=5                " Lines to scroll when cursor leaves screen
+  set scrolloff=3                 " Minimum lines to keep above and below cursor
+  set foldenable                  " Auto fold code
+  set list
+  " Highlight problematic whitespace
+  set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
+  if has('gui_running')
+    set guioptions=               " Remove all disturbance
+    " set guioptions-=m           " Remove menu bar
+    " set guioptions-=T           " Remove tool bar
+    set lines=50
+    set columns=172
+    set guifont=Menlo:h12,Dejavu_Sans_Mono:h12,Consolas:h13
+    set guicursor=n-v-c-i:block-Cursor
+    set guicursor+=n-v-c-i:blinkon0
+  else
+    if &term == 'xterm' || &term == 'screen'
+      set t_Co=256                " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
+    endif
+  endif
+" }}}
+
+" Formatting {{{
+  set nowrap                      " Do not wrap long lines
+  set textwidth=1024              " Do not break line automatically
+  set autoindent                  " Indent at the same level of the previous line
+  set shiftwidth=4                " Use indents of 4 spaces
+  set expandtab                   " Tabs are spaces, not tabs
+  set tabstop=4                   " An indentation every four columns
+  set softtabstop=4               " Let backspace delete indent
+  set nojoinspaces                " Prevents inserting two spaces after punctuation on a join (J)
+  set splitright                  " Puts new vsplit windows to the right of the current
+  set splitbelow                  " Puts new split windows to the bottom of the current
+  autocmd FileType haskell,scala,ruby,yml,vim setlocal expandtab shiftwidth=2 softtabstop=2
+  autocmd FileType markdown setlocal wrap
+  augroup ft_vim                  " Fold the vimrc file
+    autocmd!
+    autocmd FileType vim setlocal foldmethod=marker
+  augroup END
+" }}}
+
+" Plugin config {{{
+
+  " NerdTree {{{
+    if isdirectory(expand("~/.vim/plugged/nerdtree/"))
+      nmap <leader>nt :NERDTreeFind<CR>
+      nmap <leader>nT :NERDTree<CR>
+      let NERDTreeShowBookmarks=1
+      " let NERDTreeIgnore=['\.py[cd]$', '\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$', '^\.idea$', '^\.stack-work$', '^\.cabal-sandbox$', '^tmp$', '^target$', '^\.vscode$', '^cmake-build-debug$']
+      let NERDTreeIgnore=['\~$', '\.swo$', '\.swp$', '^\.git$', '^\.hg$', '^\.svn$', '\.bzr$']
+      let NERDTreeChDirMode=0
+      let NERDTreeQuitOnOpen=1
+      let NERDTreeMouseMode=2
+      let NERDTreeShowHidden=1
+      let NERDTreeKeepTreeInNewTab=1
+      let g:nerdtree_tabs_open_on_gui_startup=0
+    endif
+  " }}}
+
+  " EasyAlign {{{
+    if isdirectory(expand("~/.vim/plugged/vim-easy-align/"))
+      " Start interactive EasyAlign in visual mode (e.g. vip<leader>a)
+      xmap <leader>a <Plug>(EasyAlign)
+      " Start interactive EasyAlign for a motion/text object (e.g. <leader>aip)
+      nmap <leader>a <Plug>(EasyAlign)
+      " Align all arrow like symbols
+      " Symbol like -> , _> , ->> , ==> will be align, but > , ->- , >>= won't
+      let g:easy_align_delimiters = {
+        \ '<': {
+        \ 'pattern': '\v((\W|_)&\S)@<!\<((\W|_)&\S)+',
+        \ 'delimiter_align': 'l'
+        \ },
+        \ '>': {
+        \ 'pattern': '\v((\W|_)&\S)+\>((\W|_)&\S)@!',
+        \ 'delimiter_align': 'r'
+        \ }
+        \ }
+    endif
+  " }}}
+
+  " UndoTree {{{
+    if isdirectory(expand("~/.vim/plugged/undotree/"))
+      nmap <leader>ut :UndotreeToggle<CR>
+      " If undotree is opened, it is likely one wants to interact with it.
+      let g:undotree_SetFocusWhenToggle=1
+    endif
+  " }}}
+
+  " IndentGuides {{{
+    if isdirectory(expand("~/.vim/plugged/vim-indent-guides/"))
+      let g:indent_guides_start_level = 2
+      let g:indent_guides_guide_size = 1
+      let g:indent_guides_enable_on_vim_startup = 1
+    endif
+  " }}}
+
+  " Airline {{{
+    if isdirectory(expand("~/.vim/plugged/vim-airline/"))
+      set laststatus=2
+      if isdirectory(expand("~/.vim/plugged/vim-airline-themes/"))
+        let g:airline_theme = 'tomorrow'
+      endif
+      let g:airline_left_sep=''
+      let g:airline_right_sep=''
+    endif
+  " }}}
+
+  " CtrlP {{{
+    if isdirectory(expand("~/.vim/plugged/ctrlp.vim/"))
+      let g:ctrlp_working_path_mode = 'ra'
+      nmap <leader>b :CtrlPBuffer<CR>
+      nmap <leader>r :CtrlPMRU<CR>
+      let g:ctrlp_custom_ignore = {
+        \ 'dir': '\v[\/]\.(git|hg|svn|idea|stack-work|cabal-sandbox|vscode)$|\v[\/](tmp|target|cmake-build-debug)$',
+        \ 'file': '\v\.(exe|so|dll|pyc|swp|swo|zip|png|jpg|gif|jpeg|gz|tar|7z)$'
+        \ }
+      if isdirectory(expand("~/.vim/plugged/ctrlp-funky/"))
+        " CtrlP extensions
+        let g:ctrlp_extensions = ['funky']
+        " syntax highlighting for CtrlPFunky
+        let g:ctrlp_funky_syntax_highlight = 1
+        " CtrlPFunky
+        nmap <C-k> :CtrlPFunky<Cr>
+      endif
+    endif
+  " }}}
+
+  " TagBar {{{
+    if isdirectory(expand("~/.vim/plugged/tagbar/"))
+      nmap <leader>tt :TagbarToggle<CR>
+      " Support Haskell using hasktags
+      let g:tagbar_type_haskell = {
+        \ 'ctagsbin'  : 'hasktags',
+        \ 'ctagsargs' : '-x -c -o-',
+        \ 'kinds'     : [
+        \  'm:modules:0:1',
+        \  'd:data: 0:1',
+        \  'd_gadt: data gadt:0:1',
+        \  't:type names:0:1',
+        \  'nt:new types:0:1',
+        \  'c:classes:0:1',
+        \  'cons:constructors:1:1',
+        \  'c_gadt:constructor gadt:1:1',
+        \  'c_a:constructor accessors:1:1',
+        \  'ft:function types:1:1',
+        \  'fi:function implementations:0:1',
+        \  'o:others:0:1'
+        \ ],
+        \ 'sro'        : '.',
+        \ 'kind2scope' : {
+        \ 'm' : 'module',
+        \ 'c' : 'class',
+        \ 'd' : 'data',
+        \ 't' : 'type'
+        \ },
+        \ 'scope2kind' : {
+        \ 'module' : 'm',
+        \ 'class'  : 'c',
+        \ 'data'   : 'd',
+        \ 'type'   : 't'
+        \ }
+        \ }
+      let g:tagbar_type_rust = {
+        \ 'ctagstype' : 'rust',
+        \ 'kinds' : [
+            \'T:types,type definitions',
+            \'f:functions,function definitions',
+            \'g:enum,enumeration names',
+            \'s:structure names',
+            \'m:modules,module names',
+            \'c:consts,static constants',
+            \'t:traits,traits',
+            \'i:impls,trait implementations',
+        \]
+        \}
+    endif
+  " }}}
+
+  " EasyMotion {{{
+    if isdirectory(expand("~/.vim/plugged/vim-easymotion/"))
+      autocmd WinLeave * silent
+      " <leader>f{char} to move to {char}
+      map <leader>f <Plug>(easymotion-bd-f)
+      nmap <leader>f <Plug>(easymotion-overwin-f)
+      " Quick move to word
+      map <leader>w <Plug>(easymotion-bd-w)
+      nmap <leader>w <Plug>(easymotion-overwin-w)
+    endif
+  " }}}
+
+  " Syntastic {{{
+    if isdirectory(expand("~/.vim/plugged/syntastic/"))
+      set statusline+=%#warningmsg#
+      set statusline+=%{SyntasticStatuslineFlag()}
+      set statusline+=%*
+      let g:syntastic_always_populate_loc_list = 1
+      let g:syntastic_auto_loc_list = 1
+      let g:syntastic_check_on_open = 1
+      let g:syntastic_check_on_wq = 0
+      " Language support
+      autocmd FileType cpp let g:syntastic_cpp_compiler_options = '-std=c++14'
+      autocmd FileType rust let g:syntastic_rust_checkers = ['rustc']
+    endif
+  " }}}
+
+  " ALE {{{
+    " if isdirectory(expand("~/.vim/plugged/ale/"))
+    "   let g:ale_sign_column_always = 1
+    "   set statusline+=%{ALEGetStatusLine()}
+    " endif
+  " }}}
+
+  " Neocomplete {{{
+    if isdirectory(expand("~/.vim/plugged/neocomplete.vim/"))
+      " Note: This option must be set in .vimrc(_vimrc).  NOT IN .gvimrc(_gvimrc)!
+      " Disable AutoComplPop.
+      let g:acp_enableAtStartup = 0
+      " Use neocomplete.
+      let g:neocomplete#enable_at_startup = 1
+      " Use smartcase.
+      let g:neocomplete#enable_smart_case = 1
+      " Set minimum syntax keyword length.
+      let g:neocomplete#sources#syntax#min_keyword_length = 3
+      let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+      " Set maximun list size
+      let g:neocomplcache_max_list = 15
+      " Define dictionary.
+      let g:neocomplete#sources#dictionary#dictionaries = {
+        \ 'default' : '',
+        \ 'vimshell' : $HOME.'/.vimshell_hist',
+        \ 'scheme' : $HOME.'/.gosh_completions'
+        \ }
+      " Define keyword.
+      if !exists('g:neocomplete#keyword_patterns')
+        let g:neocomplete#keyword_patterns = {}
+      endif
+      let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+      " Plugin key-mappings.
+      inoremap <expr><C-g> neocomplete#undo_completion()
+      inoremap <expr><C-l> neocomplete#complete_common_string()
+      " Recommended key-mappings.
+      " <CR>: close popup and save indent.
+      inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+      function! s:my_cr_function()
+        " Inserting <CR> key.
+        " return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+        " For no inserting <CR> key.
+        return pumvisible() ? "\<C-y>" : "\<CR>"
+      endfunction
+      " <TAB>: completion.
+      inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+      " <C-h>, <BS>: close popup and delete backword char.
+      inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+      inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+      " Enable omni completion.
+      autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+      autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+      autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+      autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+      autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+      autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+      " Enable heavy omni completion.
+      if !exists('g:neocomplete#sources#omni#input_patterns')
+        let g:neocomplete#sources#omni#input_patterns = {}
+      endif
+      let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+      let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+      let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+      let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+      let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+
+      " Neosnippet {{{
+        if isdirectory(expand("~/.vim/plugged/neosnippet/"))
+          " Plugin key-mappings.
+          imap <C-k> <Plug>(neosnippet_expand_or_jump)
+          smap <C-k> <Plug>(neosnippet_expand_or_jump)
+          xmap <C-k> <Plug>(neosnippet_expand_target)
+          " SuperTab like snippets behavior.
+          "imap <expr><TAB>
+          " \ pumvisible() ? "\<C-n>" :
+          " \ neosnippet#expandable_or_jumpable() ?
+          " \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+          smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+          \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+          " For conceal markers.
+          if has('conceal')
+            set conceallevel=2 concealcursor=niv
+          endif
+        endif
+      " }}}
+    endif
+  " }}}
+
+  " NecoGhc {{{
+    if isdirectory(expand("~/.vim/plugged/neco-ghc/"))
+      " Disable haskell-vim omnifunc
+      let g:haskellmode_completion_ghc = 0
+    endif
+  " }}}
+
+  " GhcMod {{{
+    if isdirectory(expand("~/.vim/plugged/ghcmod-vim/"))
+      " Auto check and lint on writing
+      autocmd BufWritePost *.hs GhcModCheckAndLintAsync
+      " Show type info
+      autocmd FileType haskell nmap <buffer> <leader>ts :GhcModType<CR>
+      " Clear type info hightlight
+      autocmd FileType haskell nmap <buffer> <leader>tc :GhcModTypeClear<CR>
+      " Insert type
+      autocmd FileType haskell nmap <buffer> <leader>ti :GhcModTypeInsert<CR>
+      " Split the function case by examining a type's constructors
+      autocmd FileType haskell nmap <buffer> <leader>sp :GhcModSplitFunCase<CR>
+      " Get compiler errors/warnings
+      " autocmd FileType haskell nmap <buffer> <leader>ch :GhcModCheckAsync<CR>
+    endif
+  " }}}
+
+  " Hoogle {{{
+    if isdirectory(expand("~/.vim/plugged/vim-hoogle/"))
+      "Hoogle for detailed documentation (e.g."Functor")
+      autocmd FileType haskell nmap <buffer> <leader>dd :HoogleInfo<CR>
+      " Hoogle the word under the cursor
+      autocmd FileType haskell nmap <buffer> <leader>dw :Hoogle<CR>
+    endif
+  " }}}
+
+  " Markdown {{{
+    if isdirectory(expand("~/.vim/plugged/vim-markdown/"))
+      let g:vim_markdown_folding_disabled = 1
+      " let g:vim_markdown_folding_level = 6
+      autocmd FileType markdown nmap <buffer> <leader>a<bar> :TableFormat<CR>
+      let g:vim_markdown_conceal = 0
+      let g:vim_markdown_new_list_item_indent = 2
+    endif
+  "}}}
+
+  " Racer {{{
+    if isdirectory(expand("~/.vim/plugged/vim-racer/"))
+      autocmd FileType rust nmap <buffer> <leader>gd <Plug>(rust-def)
+      autocmd FileType rust nmap <buffer> <leader>ds <Plug>(rust-def-split)
+      autocmd FileType rust nmap <buffer> <leader>dv <Plug>(rust-def-vertical)
+      autocmd FileType rust nmap <buffer> <leader>dd <Plug>(rust-doc)
+    endif
+  " }}}
+
+  " RustVim {{{
+    if isdirectory(expand("~/.vim/plugged/rust.vim/"))
+      " Auto format file when save
+      let g:rustfmt_autosave = 1
+      " autocmd FileType rust nmap <buffer> <leader>F :RustFmt<CR>
+    endif
+  " }}}
+
+" }}}
+
+" Functions {{{
+  " Strip whitespace {{{
+    function! StripTrailingWhitespace()
+        " Preparation: save last search, and cursor position.
+        let _s=@/
+        let l = line(".")
+        let c = col(".")
+        " do the business:
+        %s/\s\+$//e
+        " clean up: restore previous search history, and cursor position
+        let @/=_s
+        call cursor(l, c)
+    endfunction
+  " }}}
+" }}}
