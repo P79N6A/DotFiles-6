@@ -22,47 +22,48 @@ endfunction
 " }}}
 
 " Plugin List {{{
-" Specify a directory for plugins
 call plug#begin(s:plugDirPath)
 
 Plug 'airblade/vim-gitgutter'
 Plug 'chiel92/vim-autoformat'
-Plug 'ctrlpvim/ctrlp.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'ervandew/supertab'
 Plug 'flazz/vim-colorschemes'
 Plug 'haya14busa/incsearch.vim'
 Plug 'haya14busa/incsearch-easymotion.vim'
 Plug 'jiangmiao/auto-pairs'
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'neomake/neomake'
 Plug 'scrooloose/nerdtree'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'tacahiroy/ctrlp-funky'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'w0rp/ale'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'Yggdroot/indentLine'
 
-" C++ {{{
+" C {{{
 Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
 Plug 'vim-scripts/a.vim', { 'for': ['cpp', 'c'] }
 Plug 'zchee/deoplete-clang', { 'do': ':UpdateRemotePlugins', 'for': ['cpp', 'c', 'objc', 'objcpp'] }
 " }}}
 
-" Initialize plugin system
 call plug#end()
 " }}}
 
 " General {{{
-set background=light             " Assume a dark background
 if CheckPlug('vim-colorschemes')
-  color monochrome
-  " color Tomorrow-Night-Bright
+  " color monochrome
+  color Tomorrow-Night-Bright
+else
+  color desert
 endif
+set background=dark             " Assume a dark background
 filetype plugin indent on       " Automatically detect file types.
 syntax on                       " Syntax highlighting
 set history=1024                " Store a ton of history
@@ -88,15 +89,15 @@ set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
 set nowrap                    " Do not wrap long lines
 set textwidth=1024            " Do not break line automatically
 set autoindent                " Indent at the same level of the previous line
-set shiftwidth=4              " Use indents of 4 spaces
+set shiftwidth=2              " Use indents of 2 spaces
 set expandtab                 " Tabs are spaces, not tabs
-set tabstop=4                 " An indentation every four columns
-set softtabstop=4             " Let backspace delete indent
+set tabstop=2                 " An indentation every 2 columns
+set softtabstop=2             " Let backspace delete indent
 set splitright                " Puts new vsplit windows to the right of the current
 set splitbelow                " Puts new split windows to the bottom of the current
-autocmd FileType cpp,haskell,scala,ruby,yml,vim setlocal expandtab shiftwidth=2 softtabstop=2
+autocmd FileType python,java setlocal expandtab shiftwidth=4 softtabstop=4
 autocmd FileType markdown setlocal wrap
-augroup ft_vim                  " Fold the vimrc file
+augroup ft_vim                " Fold the vimrc file
   autocmd!
   autocmd FileType vim setlocal foldmethod=marker
 augroup END
@@ -109,12 +110,12 @@ let maplocalleader = ' '    " Map local leader key to space
 vnoremap < <gv
 vnoremap > >gv
 " Communicating with os clipboard
-nmap <localleader>y "*y
-vmap <localleader>y "*y
-nmap <localleader>d "*d
-vmap <localleader>d "*d
-nmap <localleader>p "*p
-vmap <localleader>p "*p
+nnoremap <localleader>y "*y
+vnoremap <localleader>y "*y
+nnoremap <localleader>d "*d
+vnoremap <localleader>d "*d
+nnoremap <localleader>p "*p
+vnoremap <localleader>p "*p
 " Quickly open and reload vimrc file
 nnoremap <leader>ev :split $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
@@ -122,36 +123,51 @@ nnoremap <leader>sv :source $MYVIMRC<CR>
 
 " Plugin Settings {{{
 
-" nerdtree {{{
-if CheckPlug('nerdtree')
-  nmap <leader>nt :NERDTreeFind<CR>
-  nmap <leader>nT :NERDTree<CR>
-  " Close vim if the only window left open is a NERDTree
-  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-  let NERDTreeShowHidden=1
+" airline {{{
+if CheckPlug('vim-airline')
+  set laststatus=2
+  let g:airline_left_sep='›'
+  let g:airline_right_sep='‹'
 endif
 " }}}
 
-" vim-indent-guides {{{
-if CheckPlug('vim-indent-guides')
-  let g:indent_guides_start_level = 2
-  let g:indent_guides_guide_size = 1
-  let g:indent_guides_enable_on_vim_startup = 1
+" ale {{{
+if CheckPlug('ale')
+  let g:ale_sign_column_always = 1
+  let g:ale_sign_warning = '▲'
+  let g:ale_sign_error = '✗'
+  highlight link ALEWarningSign String
+  highlight link ALEErrorSign Title
+  nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+  nmap <silent> <C-j> <Plug>(ale_next_wrap)
+  let g:ale_linters = {'c++': 'clang++'}
 endif
 " }}}
 
-" neomake {{{
-if CheckPlug('neomake')
-  " When writing a buffer.
-  call neomake#configure#automake('w')
-  " When writing a buffer, and on normal mode changes (after 750ms).
-  call neomake#configure#automake('nw', 750)
-  " When reading a buffer (after 1s), and when writing.
-  call neomake#configure#automake('rw', 1000)
+" autoformat {{{
+if CheckPlug('vim-autoformat')
+  " Format on save
+  au BufWrite * :Autoformat
+  let g:formatdef_my_cpp = '"clang-format -sort-includes -style=google"'
+  let g:formatters_cpp = ['my_cpp']
 endif
 " }}}
 
-" vim-easymotion {{{
+" deoplete {{{
+if CheckPlug('deoplete.nvim')
+  let g:deoplete#enable_at_startup = 1
+  " deoplete-clang {{{
+  if CheckPlug('deoplete-clang')
+    if OSX()
+      let g:deoplete#sources#clang#libclang_path = '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+      let g:deoplete#sources#clang#clang_header = '/usr/local/include'
+    endif
+  endif
+  " }}}
+endif
+" }}}
+
+" easymotion {{{
 if CheckPlug('vim-easymotion')
   map <Leader> <Plug>(easymotion-prefix)
   " <Leader>f{char} to move to {char}
@@ -165,6 +181,30 @@ if CheckPlug('vim-easymotion')
   " Move to word
   map  <Leader>w <Plug>(easymotion-bd-w)
   nmap <Leader>w <Plug>(easymotion-overwin-w)
+endif
+" }}}
+
+" fzf {{{
+if CheckPlug('fzf')
+
+  function! FzfFindFiles()
+    let is_git = system('git status')
+    if v:shell_error
+      :Files
+    else
+      :GitFiles
+    endif
+  endfunction
+
+  nnoremap <silent> <C-p> :call FzfFindFiles()<CR>
+  nnoremap ; :Buffers<CR>
+  nnoremap ' :Marks<CR>
+endif
+" }}}
+
+" indentLine {{{
+if CheckPlug('indentLine')
+  let g:indentLine_char = '│'
 endif
 " }}}
 
@@ -187,62 +227,30 @@ if CheckPlug('incsearch.vim')
 endif
 " }}}
 
-" vim-airline {{{
-if CheckPlug('vim-airline')
-  set laststatus=2
-  let g:airline_left_sep=''
-  let g:airline_right_sep=''
-endif
-" }}}
-
-" deoplete {{{
-if CheckPlug('deoplete.nvim')
-  let g:deoplete#enable_at_startup = 1
-endif
-" }}}
-
-" deoplete-clang {{{
-if CheckPlug('deoplete-clang')
-  if OSX()
-    let g:deoplete#sources#clang#libclang_path = '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
-    let g:deoplete#sources#clang#clang_header = '/usr/local/include'
-  endif
-endif
-" }}}
-
-" vim-autoformat {{{
-if CheckPlug('vim-autoformat')
-  " Format on save
-  au BufWrite * :Autoformat
-  let g:formatdef_my_cpp = '"clang-format -sort-includes -style=google"'
-  let g:formatters_cpp = ['my_cpp']
-endif
-" }}}
-
-" ctrlp {{{
-if CheckPlug('ctrlp.vim')
-  let g:ctrlp_working_path_mode = 'ra'
-  let g:ctrlp_custom_ignore = {
-        \ 'dir': '\v[\/]\.(git|hg|svn|idea|stack-work|cabal-sandbox|vscode)$|\v[\/](tmp|target|build|cmake-build-debug)$',
-        \ 'file': '\v\.(exe|so|dll|pyc|swp|swo|zip|png|jpg|gif|jpeg|gz|tar|7z)$|\.DS_Store'
-        \ }
-  if CheckPlug('ctrlp-funky')
-    nnoremap <Leader>fu :CtrlPFunky<Cr>
-    " narrow the list down with a word under cursor
-    nnoremap <Leader>fU :execute 'CtrlPFunky ' . expand('<cword>')<Cr>
-  endif
-endif
-" }}}
-
-" undotree {{{
-if CheckPlug('undotree')
-  nnoremap <Leader>ut :UndotreeToggle<Cr>
+" nerdtree {{{
+if CheckPlug('nerdtree')
+  nnoremap  <leader>nt :NERDTreeToggle<CR>
+  let NERDTreeShowHidden=1
+  " Close vim if the only window left open is a NERDTree
+  autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 endif
 " }}}
 
 " supertab {{{
 if CheckPlug('supertab')
   let g:SuperTabDefaultCompletionType = "<c-n>"
+endif
+" }}}
+
+" tagbar {{{
+if CheckPlug('tagbar')
+  nnoremap <Leader>tt :TagbarToggle<Cr>
+endif
+" }}}
+
+" undotree {{{
+if CheckPlug('undotree')
+  nnoremap <Leader>ut :UndotreeToggle<Cr>
 endif
 " }}}
 
