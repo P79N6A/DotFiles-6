@@ -24,28 +24,37 @@ endfunction
 " Plugin List {{{
 call plug#begin(s:plugDirPath)
 
-Plug 'airblade/vim-gitgutter'
-Plug 'chiel92/vim-autoformat'
-Plug 'easymotion/vim-easymotion'
-Plug 'ervandew/supertab'
+" UI
 Plug 'flazz/vim-colorschemes'
-Plug 'haya14busa/incsearch.vim'
-Plug 'haya14busa/incsearch-easymotion.vim'
-Plug 'jiangmiao/auto-pairs'
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-Plug 'majutsushi/tagbar'
-Plug 'mbbill/undotree'
-Plug 'scrooloose/nerdtree'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'w0rp/ale'
-Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'Yggdroot/indentLine'
+
+" Coding
+Plug 'w0rp/ale'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'chiel92/vim-autoformat'
+Plug 'jiangmiao/auto-pairs'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'tpope/vim-commentary'
+Plug 'ervandew/supertab'
+Plug 'tpope/vim-surround'
+Plug 'majutsushi/tagbar'
+Plug 'mbbill/undotree'
+
+" Navigation
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'easymotion/vim-easymotion'
+Plug 'haya14busa/incsearch.vim'
+Plug 'haya14busa/incsearch-easymotion.vim'
+Plug 'scrooloose/nerdtree'
+
+" Git
+Plug 'airblade/vim-gitgutter'
+Plug 'tpope/vim-fugitive'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " C {{{
 Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
@@ -57,13 +66,13 @@ call plug#end()
 " }}}
 
 " General {{{
+set background=dark             " Assume a dark background
 if CheckPlug('vim-colorschemes')
   " color monochrome
   color Tomorrow-Night-Bright
 else
   color desert
 endif
-set background=dark             " Assume a dark background
 filetype plugin indent on       " Automatically detect file types.
 syntax on                       " Syntax highlighting
 set history=1024                " Store a ton of history
@@ -199,6 +208,7 @@ if CheckPlug('fzf')
   nnoremap <silent> <C-p> :call FzfFindFiles()<CR>
   nnoremap ; :Buffers<CR>
   nnoremap ' :Marks<CR>
+  nnoremap <leader>a :Ag<CR>
 endif
 " }}}
 
@@ -238,13 +248,19 @@ endif
 
 " supertab {{{
 if CheckPlug('supertab')
-  let g:SuperTabDefaultCompletionType = "<c-n>"
+  let g:SuperTabDefaultCompletionType = "<C-n>"
 endif
 " }}}
 
 " tagbar {{{
 if CheckPlug('tagbar')
   nnoremap <Leader>tt :TagbarToggle<Cr>
+endif
+" }}}
+
+" ultisnips {{{
+if CheckPlug('ultisnips')
+  let g:UltiSnipsExpandTrigger="<C-o>"
 endif
 " }}}
 
