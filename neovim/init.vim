@@ -45,7 +45,7 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ervandew/supertab'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'tpope/vim-commentary'
+Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
 
@@ -67,13 +67,15 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " CPP
 if CheckLang('cpp')
   Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
-  Plug 'vim-scripts/a.vim', { 'for': ['cpp', 'c', 'objc', 'objcpp'] }
-  Plug 'zchee/deoplete-clang', { 'do': ':UpdateRemotePlugins', 'for': ['cpp', 'c', 'objc', 'objcpp'] }
+  Plug 'vim-scripts/a.vim', { 'for': ['cpp', 'c'] }
+  Plug 'Shougo/deoplete-clangx', { 'for': ['cpp', 'c'] }
+  Plug 'Shougo/neoinclude.vim', { 'for': ['cpp', 'c'] }
 endif
 
 " Go
 if CheckLang('go')
   Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
+  Plug 'zchee/deoplete-go', { 'do': 'make' }
 endif
 
 " Python
@@ -238,7 +240,6 @@ if CheckPlug('fzf')
   nnoremap <silent> <C-p> :call FzfFindFiles()<CR>
   nnoremap ; :Buffers<CR>
   nnoremap ' :Marks<CR>
-  nnoremap <leader>c :Commits<CR>
   nnoremap <leader>a :Ag<CR>
 endif
 " }}}
@@ -265,6 +266,13 @@ if CheckPlug('incsearch.vim')
   noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
   noremap <silent><expr> ?  incsearch#go(<SID>incsearch_config({'command': '?'}))
   noremap <silent><expr> g/ incsearch#go(<SID>incsearch_config({'is_stay': 1}))
+endif
+" }}}
+
+" nerdcommenter {{{
+if CheckPlug('nerdcommenter')
+  let g:NERDSpaceDelims = 1
+  let g:NERDCompactSexyComs = 1
 endif
 " }}}
 
@@ -308,11 +316,7 @@ endif
 " CPP {{{
 if CheckLang('cpp')
   " deoplete-clang {{{
-  if CheckPlug('deoplete-clang')
-    if OSX()
-      let g:deoplete#sources#clang#libclang_path = '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
-      let g:deoplete#sources#clang#clang_header = '/usr/local/include'
-    endif
+  if CheckPlug('deoplete-clangx')
   endif
   " }}}
 
