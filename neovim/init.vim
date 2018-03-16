@@ -185,7 +185,10 @@ if CheckPlug('ale')
   highlight link ALEErrorSign Title
   nmap <silent> <C-j> <Plug>(ale_next_wrap)
   nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-  let g:ale_linters = {'c++': 'clang++'}
+  let g:ale_linters = {
+        \ 'c': 'clang',
+        \ 'c++': 'clang++'
+        \ }
 endif
 " }}}
 
