@@ -1,4 +1,10 @@
 " Basic {{{
+let s:enabled_languages = ['cpp', 'python', 'go']
+
+silent function! CheckLang(lang)
+return (index(s:enabled_languages, a:lang) >=# 0)
+endfunction
+
 silent function! OSX()
 return has('macunix')
 endfunction
@@ -32,14 +38,14 @@ Plug 'Yggdroot/indentLine'
 
 " Coding
 Plug 'w0rp/ale'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'chiel92/vim-autoformat'
 Plug 'jiangmiao/auto-pairs'
+Plug 'tpope/vim-surround'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'ervandew/supertab'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'tpope/vim-commentary'
-Plug 'ervandew/supertab'
-Plug 'tpope/vim-surround'
 Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
 
@@ -56,10 +62,25 @@ Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 
-" C {{{
-Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
-Plug 'vim-scripts/a.vim', { 'for': ['cpp', 'c'] }
-Plug 'zchee/deoplete-clang', { 'do': ':UpdateRemotePlugins', 'for': ['cpp', 'c', 'objc', 'objcpp'] }
+" Language Plugins {{{
+
+" CPP
+if CheckLang('cpp')
+  Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
+  Plug 'vim-scripts/a.vim', { 'for': ['cpp', 'c', 'objc', 'objcpp'] }
+  Plug 'zchee/deoplete-clang', { 'do': ':UpdateRemotePlugins', 'for': ['cpp', 'c', 'objc', 'objcpp'] }
+endif
+
+" Go
+if CheckLang('go')
+  Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
+endif
+
+" Python
+if CheckLang('python')
+  Plug 'zchee/deoplete-jedi'
+endif
+
 " }}}
 
 call plug#end()
@@ -68,10 +89,10 @@ call plug#end()
 " General {{{
 set background=dark             " Assume a dark background
 if CheckPlug('vim-colorschemes')
-  " color monochrome
-  color Tomorrow-Night-Bright
+  " colorscheme monochrome
+  colorscheme Tomorrow-Night-Bright
 else
-  color desert
+  colorscheme desert
 endif
 filetype plugin indent on       " Automatically detect file types.
 syntax on                       " Syntax highlighting
@@ -89,13 +110,25 @@ set incsearch                   " Increment search
 set hlsearch                    " Highlight search terms
 set ignorecase                  " Case insensitive search
 set smartcase                   " Case sensitive when uc present
-set foldenable                  " Auto fold code
 " Highlight problematic whitespace
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
+if has('gui_running')
+  set guioptions=               " Remove all disturbance
+  set lines=45
+  set columns=140
+  set guifont=Menlo:h12,Dejavu_Sans_Mono:h12,Consolas:h13
+  set guicursor=n-v-c:block-Cursor
+  set guicursor+=n-v-c-i:blinkon0
+else
+  if &term == 'xterm' || &term == 'screen'
+    set t_Co=256                " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
+  endif
+endif
 " }}}
 
 " Formatting {{{
 set nowrap                    " Do not wrap long lines
+set foldenable                " Auto fold code
 set textwidth=1024            " Do not break line automatically
 set autoindent                " Indent at the same level of the previous line
 set shiftwidth=2              " Use indents of 2 spaces
@@ -104,17 +137,18 @@ set tabstop=2                 " An indentation every 2 columns
 set softtabstop=2             " Let backspace delete indent
 set splitright                " Puts new vsplit windows to the right of the current
 set splitbelow                " Puts new split windows to the bottom of the current
-autocmd FileType python,java setlocal expandtab shiftwidth=4 softtabstop=4
-autocmd FileType markdown setlocal wrap
-augroup ft_vim                " Fold the vimrc file
+augroup after_filetype_event  " Fold the vimrc file
   autocmd!
+  autocmd FileType go setlocal noexpandtab tabstop=4 shiftwidth=4
+  autocmd FileType python,java setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
+  autocmd FileType markdown setlocal wrap
   autocmd FileType vim setlocal foldmethod=marker
 augroup END
 " }}}
 
 " Basic key mapping {{{
-let mapleader = ','         " Map leader key to comma
-let maplocalleader = ' '    " Map local leader key to space
+let mapleader = ','
+let maplocalleader = ' '
 " Visual shifting (does not exit Visual mode)
 vnoremap < <gv
 vnoremap > >gv
@@ -126,8 +160,10 @@ vnoremap <localleader>d "*d
 nnoremap <localleader>p "*p
 vnoremap <localleader>p "*p
 " Quickly open and reload vimrc file
-nnoremap <leader>ev :split $MYVIMRC<CR>
+nnoremap <leader>ev :vsplit $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
+" Quickly clear highlighting
+nnoremap <backspace> :nohl<CR>
 " }}}
 
 " Plugin Settings {{{
@@ -143,20 +179,19 @@ endif
 " ale {{{
 if CheckPlug('ale')
   let g:ale_sign_column_always = 1
-  let g:ale_sign_warning = '▲'
+  let g:ale_sign_warning = '⚠'
   let g:ale_sign_error = '✗'
   highlight link ALEWarningSign String
   highlight link ALEErrorSign Title
-  nmap <silent> <C-k> <Plug>(ale_previous_wrap)
   nmap <silent> <C-j> <Plug>(ale_next_wrap)
+  nmap <silent> <C-k> <Plug>(ale_previous_wrap)
   let g:ale_linters = {'c++': 'clang++'}
 endif
 " }}}
 
 " autoformat {{{
 if CheckPlug('vim-autoformat')
-  " Format on save
-  au BufWrite * :Autoformat
+  autocmd BufWrite * :Autoformat
   let g:formatdef_my_cpp = '"clang-format -sort-includes -style=google"'
   let g:formatters_cpp = ['my_cpp']
 endif
@@ -165,31 +200,23 @@ endif
 " deoplete {{{
 if CheckPlug('deoplete.nvim')
   let g:deoplete#enable_at_startup = 1
-  " deoplete-clang {{{
-  if CheckPlug('deoplete-clang')
-    if OSX()
-      let g:deoplete#sources#clang#libclang_path = '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
-      let g:deoplete#sources#clang#clang_header = '/usr/local/include'
-    endif
-  endif
-  " }}}
 endif
 " }}}
 
 " easymotion {{{
 if CheckPlug('vim-easymotion')
-  map <Leader> <Plug>(easymotion-prefix)
-  " <Leader>f{char} to move to {char}
-  map  <Leader>f <Plug>(easymotion-bd-f)
-  nmap <Leader>f <Plug>(easymotion-overwin-f)
+  map <leader> <Plug>(easymotion-prefix)
+  " <leader>f{char} to move to {char}
+  map  <leader>f <Plug>(easymotion-bd-f)
+  nmap <leader>f <Plug>(easymotion-overwin-f)
   " s{char}{char} to move to {char}{char}
   nmap s <Plug>(easymotion-overwin-f2)
   " Move to line
-  map <Leader>L <Plug>(easymotion-bd-jk)
-  nmap <Leader>L <Plug>(easymotion-overwin-line)
+  map <leader>L <Plug>(easymotion-bd-jk)
+  nmap <leader>L <Plug>(easymotion-overwin-line)
   " Move to word
-  map  <Leader>w <Plug>(easymotion-bd-w)
-  nmap <Leader>w <Plug>(easymotion-overwin-w)
+  map  <leader>w <Plug>(easymotion-bd-w)
+  nmap <leader>w <Plug>(easymotion-overwin-w)
 endif
 " }}}
 
@@ -208,6 +235,7 @@ if CheckPlug('fzf')
   nnoremap <silent> <C-p> :call FzfFindFiles()<CR>
   nnoremap ; :Buffers<CR>
   nnoremap ' :Marks<CR>
+  nnoremap <leader>c :Commits<CR>
   nnoremap <leader>a :Ag<CR>
 endif
 " }}}
@@ -254,7 +282,7 @@ endif
 
 " tagbar {{{
 if CheckPlug('tagbar')
-  nnoremap <Leader>tt :TagbarToggle<Cr>
+  nnoremap <leader>tt :TagbarToggle<CR>
 endif
 " }}}
 
@@ -266,9 +294,71 @@ endif
 
 " undotree {{{
 if CheckPlug('undotree')
-  nnoremap <Leader>ut :UndotreeToggle<Cr>
+  nnoremap <leader>ut :UndotreeToggle<CR>
 endif
 " }}}
 
 " }}}
 
+" Language Config {{{
+
+" CPP {{{
+if CheckLang('cpp')
+  " deoplete-clang {{{
+  if CheckPlug('deoplete-clang')
+    if OSX()
+      let g:deoplete#sources#clang#libclang_path = '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+      let g:deoplete#sources#clang#clang_header = '/usr/local/include'
+    endif
+  endif
+  " }}}
+
+  augroup filetype_cpp
+    autocmd FileType c,cpp nnoremap <localleader>r :!cd build && make run<CR>
+    autocmd FileType c,cpp nnoremap <localleader>t :!cd build && make test<CR>
+    autocmd FileType c,cpp nnoremap <localleader>b :!cd build && make<CR>
+  augroup END
+endif
+" }}}
+
+" Go {{{
+if CheckLang('go')
+  if CheckPlug('vim-go')
+    let g:go_highlight_functions = 1
+    let g:go_highlight_methods = 1
+    let g:go_highlight_structs = 1
+    let g:go_highlight_operators = 1
+    let g:go_highlight_build_constraints = 1
+    let g:go_fmt_command = "goimports"
+    let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+    let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+
+    augroup filetype_go
+      autocmd!
+      autocmd FileType go nmap <localleader>d <Plug>(go-def)
+      autocmd FileType go nmap <localleader>b <Plug>(go-build)
+      autocmd FileType go nmap <localleader>r <Plug>(go-run)
+      autocmd FileType go nmap <localleader>t <Plug>(go-test)
+      autocmd FileType go nmap <localleader>c <Plug>(go-coverage-toggle)
+      autocmd FileType go nmap <localleader>i <Plug>(go-info)
+    augroup END
+  endif
+endif
+" }}}
+
+" Python {{{
+if CheckLang('python')
+  augroup filetype_python
+    autocmd!
+    autocmd FileType python nnoremap <localleader>r :!python3 %<CR>
+    autocmd FileType python nnoremap <localleader>t :!python3 -m doctest -v %<CR>
+  augroup END
+endif
+" }}}
+
+" }}}
+
+" After {{{
+" Clear highlight
+autocmd BufRead * nohl
+" }}}
