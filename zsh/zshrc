@@ -45,6 +45,8 @@ source $ZSH/oh-my-zsh.sh
 alias typora="open -a typora"
 alias finder="open -a finder"
 alias python="python3"
+alias vi="nvim"
+alias vim="nvim"
 
 # stack
 export PATH=$PATH:$HOME/.local/bin
