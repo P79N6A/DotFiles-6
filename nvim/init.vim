@@ -96,10 +96,11 @@ call plug#end()
 " }}}
 
 " General {{{
-set background=dark             " Assume a dark background
+set background=light
 if CheckPlug('vim-colorschemes')
   " colorscheme monochrome
-  colorscheme Tomorrow-Night-Bright
+  " colorscheme Tomorrow-Night-Bright
+  colorscheme solarized
 else
   colorscheme desert
 endif
@@ -280,6 +281,7 @@ endif
 " tagbar {{{
 if CheckPlug('tagbar')
   nnoremap <leader>tt :TagbarToggle<CR>
+  let g:tagbar_autofocus = 1
 endif
 " }}}
 
