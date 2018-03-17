@@ -55,7 +55,7 @@ Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
 
 " Navigation
-Plug 'junegunn/fzf'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
@@ -224,19 +224,16 @@ endif
 " fzf {{{
 if CheckPlug('fzf')
 
-  function! FzfFindFiles()
-    let is_git = system('git status')
-    if v:shell_error
-      :Files
-    else
-      :GitFiles
-    endif
-  endfunction
-
-  nnoremap <silent> <C-p> :call FzfFindFiles()<CR>
+  nnoremap <silent> <C-p> :Files<CR>
   nnoremap ; :Buffers<CR>
   nnoremap ' :Marks<CR>
   nnoremap <leader>a :Ag<CR>
+
+  augroup filetype_fzf
+    autocmd! FileType fzf
+    autocmd  FileType fzf set laststatus=0 noshowmode
+          \| autocmd BufLeave <buffer> set laststatus=2 showmode
+  augroup END
 endif
 " }}}
 
