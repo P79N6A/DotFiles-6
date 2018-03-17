@@ -63,6 +63,7 @@ export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1087"
 
 # fzf
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
+export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # autojump

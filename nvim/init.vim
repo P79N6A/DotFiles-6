@@ -99,6 +99,7 @@ call plug#end()
 set background=light
 if CheckPlug('vim-colorschemes')
   " colorscheme monochrome
+  " colorscheme Tomorrow
   " colorscheme Tomorrow-Night-Bright
   colorscheme solarized
 else
@@ -227,7 +228,7 @@ if CheckPlug('fzf.vim')
 
   nnoremap <silent> <C-p> :Files<CR>
   nnoremap ; :Buffers<CR>
-  nnoremap ' :Marks<CR>
+  nnoremap ' :Windows<CR>
   nnoremap <leader>a :Ag<CR>
 
   augroup filetype_fzf
