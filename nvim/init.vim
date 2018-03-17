@@ -169,7 +169,7 @@ vnoremap <localleader>d "*d
 nnoremap <localleader>p "*p
 vnoremap <localleader>p "*p
 " Quickly open and reload vimrc file
-nnoremap <leader>ev :vsplit $MYVIMRC<CR>
+nnoremap <leader>ev :split $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
 " Quickly clear highlighting
 nnoremap <backspace> :nohl<CR>
