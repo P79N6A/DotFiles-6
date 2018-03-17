@@ -1,34 +1,39 @@
 " Basic {{{
 let s:enabled_languages = ['cpp', 'python', 'go']
 
+" Helper Functions {{{
 silent function! CheckLang(lang)
 return (index(s:enabled_languages, a:lang) >=# 0)
 endfunction
 
-silent function! OSX()
+silent function! IsMacOs()
 return has('macunix')
 endfunction
-silent function! LINUX()
+silent function! IsLinux()
 return has('unix') && !has('macunix') && !has('win32unix')
 endfunction
-silent function! WINDOWS()
+silent function! IsWindows()
 return  (has('win32') || has('win64'))
 endfunction
 
-if WINDOWS()
-  let s:plugDirPath = '~/AppData/Local/nvim/plugged/'
+if IsWindows()
+  let s:nvim_plug_path = '~/AppData/Local/nvim/plugged/'
 else
-  let s:plugDirPath = '~/.local/share/nvim/plugged/'
+  let s:nvim_plug_path = '~/.local/share/nvim/plugged/'
 endif
 
-silent function! CheckPlug(plugName)
-let l:plugPath = s:plugDirPath . a:plugName
-return isdirectory(expand(l:plugPath))
+silent function! CheckPlug(plug_name)
+let l:plug_full_path = s:nvim_plug_path . a:plug_name
+return isdirectory(expand(l:plug_full_path))
 endfunction
 " }}}
 
+" }}}
+
 " Plugin List {{{
-call plug#begin(s:plugDirPath)
+call plug#begin(s:nvim_plug_path)
+
+" General Plugins {{{
 
 " UI
 Plug 'flazz/vim-colorschemes'
@@ -61,6 +66,8 @@ Plug 'scrooloose/nerdtree'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 Plug 'Xuyuanp/nerdtree-git-plugin'
+
+" }}}
 
 " Language Plugins {{{
 
@@ -112,19 +119,17 @@ set incsearch                   " Increment search
 set hlsearch                    " Highlight search terms
 set ignorecase                  " Case insensitive search
 set smartcase                   " Case sensitive when uc present
+" when scrolling, keep cursor 3 lines away from screen border
+set scrolloff=3
 " Highlight problematic whitespace
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
 if has('gui_running')
   set guioptions=               " Remove all disturbance
-  set lines=45
-  set columns=140
   set guifont=Menlo:h12,Dejavu_Sans_Mono:h12,Consolas:h13
   set guicursor=n-v-c:block-Cursor
-  set guicursor+=n-v-c-i:blinkon0
+  set guicursor+=a:blinkon0
 else
-  if &term == 'xterm' || &term == 'screen'
-    set t_Co=256                " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
-  endif
+  let &t_Co = 256
 endif
 " }}}
 
@@ -139,7 +144,7 @@ set tabstop=2                 " An indentation every 2 columns
 set softtabstop=2             " Let backspace delete indent
 set splitright                " Puts new vsplit windows to the right of the current
 set splitbelow                " Puts new split windows to the bottom of the current
-augroup after_filetype_event  " Fold the vimrc file
+augroup filetype_specific     " Fold the vimrc file
   autocmd!
   autocmd FileType go setlocal noexpandtab tabstop=4 shiftwidth=4
   autocmd FileType python,java setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
@@ -211,16 +216,7 @@ endif
 " easymotion {{{
 if CheckPlug('vim-easymotion')
   map <leader> <Plug>(easymotion-prefix)
-  " <leader>f{char} to move to {char}
-  map  <leader>f <Plug>(easymotion-bd-f)
   nmap <leader>f <Plug>(easymotion-overwin-f)
-  " s{char}{char} to move to {char}{char}
-  nmap s <Plug>(easymotion-overwin-f2)
-  " Move to line
-  map <leader>L <Plug>(easymotion-bd-jk)
-  nmap <leader>L <Plug>(easymotion-overwin-line)
-  " Move to word
-  map  <leader>w <Plug>(easymotion-bd-w)
   nmap <leader>w <Plug>(easymotion-overwin-w)
 endif
 " }}}
@@ -241,12 +237,6 @@ if CheckPlug('fzf')
   nnoremap ; :Buffers<CR>
   nnoremap ' :Marks<CR>
   nnoremap <leader>a :Ag<CR>
-endif
-" }}}
-
-" indentLine {{{
-if CheckPlug('indentLine')
-  let g:indentLine_char = '│'
 endif
 " }}}
 
@@ -272,7 +262,6 @@ endif
 " nerdcommenter {{{
 if CheckPlug('nerdcommenter')
   let g:NERDSpaceDelims = 1
-  let g:NERDCompactSexyComs = 1
 endif
 " }}}
 
@@ -299,7 +288,7 @@ endif
 
 " ultisnips {{{
 if CheckPlug('ultisnips')
-  let g:UltiSnipsExpandTrigger="<C-o>"
+  let g:UltiSnipsExpandTrigger="<C-j>"
 endif
 " }}}
 
@@ -315,11 +304,6 @@ endif
 
 " CPP {{{
 if CheckLang('cpp')
-  " deoplete-clang {{{
-  if CheckPlug('deoplete-clangx')
-  endif
-  " }}}
-
   augroup filetype_cpp
     autocmd FileType c,cpp nnoremap <localleader>r :!cd build && make run<CR>
     autocmd FileType c,cpp nnoremap <localleader>t :!cd build && make test<CR>
@@ -342,12 +326,13 @@ if CheckLang('go')
 
     augroup filetype_go
       autocmd!
-      autocmd FileType go nmap <localleader>d <Plug>(go-def)
+      autocmd FileType go nmap gd <Plug>(go-def)
+      autocmd FileType go nmap gv <Plug>(go-doc-vertical)
       autocmd FileType go nmap <localleader>b <Plug>(go-build)
       autocmd FileType go nmap <localleader>r <Plug>(go-run)
       autocmd FileType go nmap <localleader>t <Plug>(go-test)
-      autocmd FileType go nmap <localleader>c <Plug>(go-coverage-toggle)
       autocmd FileType go nmap <localleader>i <Plug>(go-info)
+      autocmd FileType go nmap <localleader>e <Plug>(go-rename)
     augroup END
   endif
 endif
@@ -363,9 +348,4 @@ if CheckLang('python')
 endif
 " }}}
 
-" }}}
-
-" After {{{
-" Clear highlight
-autocmd BufRead * nohl
 " }}}
