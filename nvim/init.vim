@@ -82,12 +82,13 @@ endif
 " Go
 if CheckLang('go')
   Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
-  Plug 'zchee/deoplete-go', { 'do': 'make' }
+  Plug 'zchee/deoplete-go', { 'do': 'make', 'for': ['go'] }
 endif
 
 " Python
 if CheckLang('python')
-  Plug 'zchee/deoplete-jedi'
+  Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
+  Plug 'davidhalter/jedi-vim', { 'for': ['python'] }
 endif
 
 " }}}
@@ -180,8 +181,8 @@ nnoremap <backspace> :nohl<CR>
 " airline {{{
 if CheckPlug('vim-airline')
   set laststatus=2
-  let g:airline_left_sep='›'
-  let g:airline_right_sep='‹'
+  let g:airline_left_sep = '›'
+  let g:airline_right_sep = '‹'
 endif
 " }}}
 
@@ -267,7 +268,7 @@ endif
 " nerdtree {{{
 if CheckPlug('nerdtree')
   nnoremap  <leader>nt :NERDTreeToggle<CR>
-  let NERDTreeShowHidden=1
+  let NERDTreeShowHidden = 1
   " Close vim if the only window left open is a NERDTree
   autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 endif
@@ -288,7 +289,7 @@ endif
 
 " ultisnips {{{
 if CheckPlug('ultisnips')
-  let g:UltiSnipsExpandTrigger="<C-j>"
+  let g:UltiSnipsExpandTrigger = "<C-j>"
 endif
 " }}}
 
@@ -300,14 +301,14 @@ endif
 
 " }}}
 
-" Language Config {{{
+" Language Settings {{{
 
 " CPP {{{
 if CheckLang('cpp')
   augroup filetype_cpp
-    autocmd FileType c,cpp nnoremap <localleader>r :!cd build && make run<CR>
-    autocmd FileType c,cpp nnoremap <localleader>t :!cd build && make test<CR>
-    autocmd FileType c,cpp nnoremap <localleader>b :!cd build && make<CR>
+    autocmd FileType c,cpp nnoremap <leader>r :!cd build && make run<CR>
+    autocmd FileType c,cpp nnoremap <leader>t :!cd build && make test<CR>
+    autocmd FileType c,cpp nnoremap <leader>b :!cd build && make<CR>
   augroup END
 endif
 " }}}
@@ -318,21 +319,17 @@ if CheckLang('go')
     let g:go_highlight_functions = 1
     let g:go_highlight_methods = 1
     let g:go_highlight_structs = 1
-    let g:go_highlight_operators = 1
     let g:go_highlight_build_constraints = 1
     let g:go_fmt_command = "goimports"
-    let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-    let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-
     augroup filetype_go
       autocmd!
       autocmd FileType go nmap gd <Plug>(go-def)
-      autocmd FileType go nmap gv <Plug>(go-doc-vertical)
-      autocmd FileType go nmap <localleader>b <Plug>(go-build)
-      autocmd FileType go nmap <localleader>r <Plug>(go-run)
-      autocmd FileType go nmap <localleader>t <Plug>(go-test)
-      autocmd FileType go nmap <localleader>i <Plug>(go-info)
-      autocmd FileType go nmap <localleader>e <Plug>(go-rename)
+      autocmd FileType go nmap <leader>d <Plug>(go-doc)
+      autocmd FileType go nmap <leader>i <Plug>(go-doc)
+      autocmd FileType go nmap <leader>b <Plug>(go-build)
+      autocmd FileType go nmap <leader>r <Plug>(go-run)
+      autocmd FileType go nmap <leader>t <Plug>(go-test)
+      autocmd FileType go nmap <leader>e <Plug>(go-rename)
     augroup END
   endif
 endif
@@ -340,10 +337,17 @@ endif
 
 " Python {{{
 if CheckLang('python')
+  if CheckPlug('jedi-vim')
+    let g:jedi#completions_enabled = 0
+    let g:jedi#force_py_version = 3
+    let g:jedi#goto_definitions_command = "gd"
+    let g:jedi#documentation_command = "<leader>d"
+    let g:jedi#rename_command = "<leader>e"
+  endif
   augroup filetype_python
     autocmd!
-    autocmd FileType python nnoremap <localleader>r :!python3 %<CR>
-    autocmd FileType python nnoremap <localleader>t :!python3 -m doctest -v %<CR>
+    autocmd FileType python nnoremap <leader>r :!python3 %<CR>
+    autocmd FileType python nnoremap <leader>t :!python3 -m doctest -v %<CR>
   augroup END
 endif
 " }}}
