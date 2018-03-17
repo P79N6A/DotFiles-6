@@ -62,9 +62,8 @@ export https_proxy=http://127.0.0.1:1087;
 export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1087"
 
 # fzf
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-# Make fzf start below the cursor with --height option.
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # autojump
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh

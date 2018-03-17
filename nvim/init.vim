@@ -55,7 +55,7 @@ Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
 
 " Navigation
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
@@ -222,7 +222,7 @@ endif
 " }}}
 
 " fzf {{{
-if CheckPlug('fzf')
+if CheckPlug('fzf.vim')
 
   nnoremap <silent> <C-p> :Files<CR>
   nnoremap ; :Buffers<CR>
