@@ -48,6 +48,7 @@ Plug 'mbbill/undotree'
 Plug 'romainl/vim-qf'
 Plug 'tomtom/tcomment_vim'
 Plug 'Valloric/YouCompleteMe', { 'do': './install.py --all' }
+Plug 'w0rp/ale'
 
 " Navigation
 Plug '/usr/local/opt/fzf'
@@ -157,6 +158,15 @@ nnoremap <backspace> :nohl<CR>
 " airline {{{
 if CheckPlug('vim-airline')
   set laststatus=2
+endif
+" }}}
+
+" ale {{{
+if CheckPlug('ale')
+  let g:ale_sign_column_always = 1
+  nmap <silent> <C-j> <Plug>(ale_next_wrap)
+  nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+  let g:ale_c_build_dir='build'
 endif
 " }}}
 
