@@ -42,7 +42,7 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'Yggdroot/indentLine'
 
 " Coding
-Plug 'w0rp/ale'
+Plug 'neomake/neomake'
 Plug 'chiel92/vim-autoformat'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
@@ -50,16 +50,16 @@ Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ervandew/supertab'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-Plug 'scrooloose/nerdcommenter'
 Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
+Plug 'romainl/vim-qf'
+Plug 'tomtom/tcomment_vim'
 
 " Navigation
 Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'haya14busa/incsearch.vim'
-Plug 'haya14busa/incsearch-easymotion.vim'
 Plug 'scrooloose/nerdtree'
 
 " Git
@@ -100,9 +100,7 @@ call plug#end()
 set background=light
 if CheckPlug('vim-colorschemes')
   " colorscheme monochrome
-  " colorscheme Tomorrow
-  " colorscheme Tomorrow-Night-Bright
-  colorscheme solarized
+  colorscheme Tomorrow-Night-Bright
 else
   colorscheme desert
 endif
@@ -122,13 +120,11 @@ set incsearch                   " Increment search
 set hlsearch                    " Highlight search terms
 set ignorecase                  " Case insensitive search
 set smartcase                   " Case sensitive when uc present
-" when scrolling, keep cursor 3 lines away from screen border
-set scrolloff=3
-" Highlight problematic whitespace
+" Highlight whitespace
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
 if has('gui_running')
   set guioptions=               " Remove all disturbance
-  set guifont=Menlo:h12,Dejavu_Sans_Mono:h12,Consolas:h13
+  set guifont='Fira Code':h12,Menlo:h12,Dejavu_Sans_Mono:h12,Consolas:h13
   set guicursor=n-v-c:block-Cursor
   set guicursor+=a:blinkon0
 else
@@ -181,31 +177,13 @@ nnoremap <backspace> :nohl<CR>
 " airline {{{
 if CheckPlug('vim-airline')
   set laststatus=2
-  let g:airline_left_sep = '›'
-  let g:airline_right_sep = '‹'
-endif
-" }}}
-
-" ale {{{
-if CheckPlug('ale')
-  let g:ale_sign_column_always = 1
-  let g:ale_sign_warning = '⚠'
-  let g:ale_sign_error = '✗'
-  highlight link ALEWarningSign String
-  highlight link ALEErrorSign Title
-  nmap <silent> <C-j> <Plug>(ale_next_wrap)
-  nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-  let g:ale_linters = {
-        \ 'c': 'clang',
-        \ 'c++': 'clang++'
-        \ }
 endif
 " }}}
 
 " autoformat {{{
 if CheckPlug('vim-autoformat')
   autocmd BufWrite * :Autoformat
-  let g:formatdef_my_cpp = '"clang-format -sort-includes -style=google"'
+  let g:formatdef_my_cpp = '"clang-format -style=file"'
   let g:formatters_cpp = ['my_cpp']
 endif
 " }}}
@@ -227,10 +205,9 @@ endif
 " fzf {{{
 if CheckPlug('fzf.vim')
 
-  nnoremap <silent> <C-p> :Files<CR>
+  nnoremap <C-p> :Files<CR>
   nnoremap ; :Buffers<CR>
-  nnoremap ' :Windows<CR>
-  nnoremap <leader>a :Ag<CR>
+  nnoremap ' :Ag<CR>
 
   augroup filetype_fzf
     autocmd! FileType fzf
@@ -240,22 +217,21 @@ if CheckPlug('fzf.vim')
 endif
 " }}}
 
-" insearch.vim {{{
-if CheckPlug('incsearch.vim')
+" neomake {{{
+if CheckPlug('neomake')
+  call neomake#configure#automake('nrwi', 500)
+  let g:neomake_open_list = 2
 
-  function! s:incsearch_config(...) abort
-    return incsearch#util#deepextend(deepcopy({
-          \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-          \   'keymap': {
-          \     "\<CR>": '<Over>(easymotion)'
-          \   },
-          \   'is_expr': 0
-          \ }), get(a:, 1, {}))
+  let linter = neomake#makers#ft#cpp#clang()
+  function linter.fn(jobinfo) abort
+    let maker = copy(self)
+    if filereadable('.clang')
+      let maker.args += split(join(readfile('.clang'), "\n"))
+    endif
+    return maker
   endfunction
 
-  noremap <silent><expr> /  incsearch#go(<SID>incsearch_config())
-  noremap <silent><expr> ?  incsearch#go(<SID>incsearch_config({'command': '?'}))
-  noremap <silent><expr> g/ incsearch#go(<SID>incsearch_config({'is_stay': 1}))
+  let g:neomake_cpp_clang_maker = linter
 endif
 " }}}
 
@@ -269,7 +245,6 @@ endif
 if CheckPlug('nerdtree')
   nnoremap  <leader>nt :NERDTreeToggle<CR>
   let NERDTreeShowHidden = 1
-  " Close vim if the only window left open is a NERDTree
   autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 endif
 " }}}
@@ -324,7 +299,6 @@ if CheckLang('go')
     augroup filetype_go
       autocmd!
       autocmd FileType go nmap gd <Plug>(go-def)
-      autocmd FileType go nmap <leader>d <Plug>(go-doc)
       autocmd FileType go nmap <leader>i <Plug>(go-doc)
       autocmd FileType go nmap <leader>b <Plug>(go-build)
       autocmd FileType go nmap <leader>r <Plug>(go-run)
@@ -341,7 +315,7 @@ if CheckLang('python')
     let g:jedi#completions_enabled = 0
     let g:jedi#force_py_version = 3
     let g:jedi#goto_definitions_command = "gd"
-    let g:jedi#documentation_command = "<leader>d"
+    let g:jedi#documentation_command = "<leader>i"
     let g:jedi#rename_command = "<leader>e"
   endif
   augroup filetype_python
