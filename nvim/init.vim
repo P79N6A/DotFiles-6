@@ -230,7 +230,6 @@ if CheckPlug('neomake')
     endif
     return maker
   endfunction
-
   let g:neomake_cpp_clang_maker = linter
 endif
 " }}}
