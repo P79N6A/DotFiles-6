@@ -265,7 +265,7 @@ endif
 
 " youcompleteme {{{
 if CheckPlug('YouCompleteMe')
-  let g:ycm_global_ycm_extra_conf = expand('<sfile>:p:h') . '/global_extra_conf.py'
+  let g:ycm_global_ycm_extra_conf=expand('<sfile>:p:h') . '/global_extra_conf.py'
   nnoremap gd :YcmCompleter GoTo<CR>
   nnoremap gt :YcmCompleter GetType<CR>
   nnoremap gi :YcmCompleter GetDoc<CR>
