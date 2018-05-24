@@ -1,11 +1,6 @@
 " Basic {{{
-let s:enabled_languages = ['cpp', 'python', 'go']
 
 " Helper Functions {{{
-silent function! CheckLang(lang)
-return (index(s:enabled_languages, a:lang) >=# 0)
-endfunction
-
 silent function! IsMacOs()
 return has('macunix')
 endfunction
@@ -42,11 +37,9 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'Yggdroot/indentLine'
 
 " Coding
-Plug 'neomake/neomake'
 Plug 'chiel92/vim-autoformat'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'ervandew/supertab'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -54,6 +47,7 @@ Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
 Plug 'romainl/vim-qf'
 Plug 'tomtom/tcomment_vim'
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --all' }
 
 " Navigation
 Plug '/usr/local/opt/fzf'
@@ -72,24 +66,10 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 " Language Plugins {{{
 
 " CPP
-if CheckLang('cpp')
-  Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
-  Plug 'vim-scripts/a.vim', { 'for': ['cpp', 'c'] }
-  Plug 'Shougo/deoplete-clangx', { 'for': ['cpp', 'c'] }
-  Plug 'Shougo/neoinclude.vim', { 'for': ['cpp', 'c'] }
-endif
+Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
 
 " Go
-if CheckLang('go')
-  Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
-  Plug 'zchee/deoplete-go', { 'do': 'make', 'for': ['go'] }
-endif
-
-" Python
-if CheckLang('python')
-  Plug 'zchee/deoplete-jedi', { 'for': ['python'] }
-  Plug 'davidhalter/jedi-vim', { 'for': ['python'] }
-endif
+Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries', 'for': ['go'] }
 
 " }}}
 
@@ -189,9 +169,9 @@ endif
 " }}}
 
 " deoplete {{{
-if CheckPlug('deoplete.nvim')
-  let g:deoplete#enable_at_startup = 1
-endif
+" if CheckPlug('deoplete.nvim')
+"   let g:deoplete#enable_at_startup = 1
+" endif
 " }}}
 
 " easymotion {{{
@@ -218,20 +198,20 @@ endif
 " }}}
 
 " neomake {{{
-if CheckPlug('neomake')
-  call neomake#configure#automake('nrwi', 500)
-  let g:neomake_open_list = 2
-
-  let linter = neomake#makers#ft#cpp#clang()
-  function linter.fn(jobinfo) abort
-    let maker = copy(self)
-    if filereadable('.clang')
-      let maker.args += split(join(readfile('.clang'), "\n"))
-    endif
-    return maker
-  endfunction
-  let g:neomake_cpp_clang_maker = linter
-endif
+" if CheckPlug('neomake')
+"   call neomake#configure#automake('nrwi', 500)
+"   let g:neomake_open_list = 2
+"
+"   let linter = neomake#makers#ft#cpp#clang()
+"   function linter.fn(jobinfo) abort
+"     let maker = copy(self)
+"     if filereadable('.clang')
+"       let maker.args += split(join(readfile('.clang'), "\n"))
+"     endif
+"     return maker
+"   endfunction
+"   let g:neomake_cpp_clang_maker = linter
+" endif
 " }}}
 
 " nerdcommenter {{{
@@ -273,56 +253,49 @@ if CheckPlug('undotree')
 endif
 " }}}
 
+" youcompleteme {{{
+if CheckPlug('YouCompleteMe')
+  let g:ycm_global_ycm_extra_conf = expand('<sfile>:p:h') . '/global_extra_conf.py'
+  nnoremap gd :YcmCompleter GoTo<CR>
+  nnoremap gt :YcmCompleter GetType<CR>
+  nnoremap gi :YcmCompleter GetDoc<CR>
+endif
+" }}}
+
 " }}}
 
 " Language Settings {{{
 
 " CPP {{{
-if CheckLang('cpp')
-  augroup filetype_cpp
-    autocmd FileType c,cpp nnoremap <leader>r :!cd build && make run<CR>
-    autocmd FileType c,cpp nnoremap <leader>t :!cd build && make test<CR>
-    autocmd FileType c,cpp nnoremap <leader>b :!cd build && make<CR>
-  augroup END
-endif
+augroup filetype_cpp
+  autocmd FileType c,cpp nnoremap <localleader>r :!cd build && make run<CR>
+  autocmd FileType c,cpp nnoremap <localleader>t :!cd build && make test<CR>
+  autocmd FileType c,cpp nnoremap <localleader>b :!cd build && make<CR>
+augroup END
 " }}}
 
 " Go {{{
-if CheckLang('go')
-  if CheckPlug('vim-go')
-    let g:go_highlight_functions = 1
-    let g:go_highlight_methods = 1
-    let g:go_highlight_structs = 1
-    let g:go_highlight_build_constraints = 1
-    let g:go_fmt_command = "goimports"
-    augroup filetype_go
-      autocmd!
-      autocmd FileType go nmap gd <Plug>(go-def)
-      autocmd FileType go nmap <leader>i <Plug>(go-doc)
-      autocmd FileType go nmap <leader>b <Plug>(go-build)
-      autocmd FileType go nmap <leader>r <Plug>(go-run)
-      autocmd FileType go nmap <leader>t <Plug>(go-test)
-      autocmd FileType go nmap <leader>e <Plug>(go-rename)
-    augroup END
-  endif
+if CheckPlug('vim-go')
+  let g:go_highlight_functions = 1
+  let g:go_highlight_methods = 1
+  let g:go_highlight_structs = 1
+  let g:go_highlight_build_constraints = 1
+  let g:go_fmt_command = "goimports"
+  augroup filetype_go
+    autocmd!
+    autocmd FileType go nmap <localleader>b <Plug>(go-build)
+    autocmd FileType go nmap <localleader>r <Plug>(go-run)
+    autocmd FileType go nmap <localleader>t <Plug>(go-test)
+  augroup END
 endif
 " }}}
 
 " Python {{{
-if CheckLang('python')
-  if CheckPlug('jedi-vim')
-    let g:jedi#completions_enabled = 0
-    let g:jedi#force_py_version = 3
-    let g:jedi#goto_definitions_command = "gd"
-    let g:jedi#documentation_command = "<leader>i"
-    let g:jedi#rename_command = "<leader>e"
-  endif
-  augroup filetype_python
-    autocmd!
-    autocmd FileType python nnoremap <leader>r :!python3 %<CR>
-    autocmd FileType python nnoremap <leader>t :!python3 -m doctest -v %<CR>
-  augroup END
-endif
+augroup filetype_python
+  autocmd!
+  autocmd FileType python nnoremap <localleader>r :!python %<CR>
+  autocmd FileType python nnoremap <localleader>t :!python -m doctest -v %<CR>
+augroup END
 " }}}
 
 " }}}
