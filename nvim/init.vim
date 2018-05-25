@@ -250,7 +250,6 @@ if CheckPlug('YouCompleteMe')
   let g:ycm_show_diagnostics_ui = 0
   " 映射按键, 没有这个会导致其他插件的 tab 不能用
   inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>"
-  autocmd InsertLeave * if pumvisible() == 0|pclose|endif
   nnoremap gd :YcmCompleter GoTo<CR>
   nnoremap gi :YcmCompleter GetType<CR>
   nnoremap gD :YcmCompleter GetDoc<CR>
