@@ -85,26 +85,26 @@ if CheckPlug('vim-colorschemes')
 else
   colorscheme desert
 endif
-filetype plugin indent on       " Automatically detect file types.
-syntax on                       " Syntax highlighting
-set history=1024                " Store a ton of history
-set mouse=a                     " Automatically enable mouse usage
-set mousehide                   " Hide the mouse cursor while typing
-set colorcolumn=80              " Highlight 80th column
-set cursorline                  " Highlight current line
-set showmode                    " Display the current mode
-set backspace=indent,eol,start  " Backspace for dummies
-set linespace=0                 " No extra spaces between rows
-set number                      " Line numbers on
-set showmatch                   " Show matching brackets/parenthesis
-set incsearch                   " Increment search
-set hlsearch                    " Highlight search terms
-set ignorecase                  " Case insensitive search
-set smartcase                   " Case sensitive when uc present
-" Highlight whitespace
+filetype plugin indent on       " 检测文件类型
+syntax on                       " 语法高亮
+set history=1024                " 历史记录
+set mouse=a                     " 允许使用鼠标
+set mousehide                   " 输入时自动隐藏鼠标
+set colorcolumn=80,120          " 高亮第 80 列和第 120 列
+set cursorline                  " 高亮当前行
+set showmode                    " 显示当前模式
+set backspace=indent,eol,start  " 正确退格
+set linespace=0                 " 两行之间不添加额外空格
+set number                      " 开启行号
+set showmatch                   " 显示匹配的括号
+set incsearch                   " 增量查找
+set hlsearch                    " 高亮查找内容
+set ignorecase                  " 查找时大小写不敏感
+set smartcase                   " 查找时若有大写字母则大小写敏感
+" 高亮空白字符
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
 if has('gui_running')
-  set guioptions=               " Remove all disturbance
+  set guioptions =
   set guifont='Fira Code':h13,Menlo:h13,Dejavu_Sans_Mono:h13,Consolas:h13
   set guicursor=n-v-c:block-Cursor
   set guicursor+=a:blinkon0
@@ -112,17 +112,17 @@ endif
 " }}}
 
 " Formatting {{{
-set nowrap                    " Do not wrap long lines
-set foldenable                " Auto fold code
-set textwidth=1024            " Do not break line automatically
-set autoindent                " Indent at the same level of the previous line
-set shiftwidth=2              " Use indents of 2 spaces
-set expandtab                 " Tabs are spaces, not tabs
-set tabstop=2                 " An indentation every 2 columns
-set softtabstop=2             " Let backspace delete indent
-set splitright                " Puts new vsplit windows to the right of the current
-set splitbelow                " Puts new split windows to the bottom of the current
-augroup filetype_specific     " Fold the vimrc file
+set nowrap                    " 关闭折行
+set foldenable                " 自动折叠代码
+set textwidth=1024            " 阻止自动断行
+set autoindent                " 自动缩进
+set shiftwidth=2              " 默认缩进
+set expandtab                 " 令 tab 变为空格
+set tabstop=2                 " tab 宽度为 2 个字符
+set softtabstop=2             " 退格删除缩进
+set splitright                " vsplit 在右侧打开
+set splitbelow                " split 在下方打开
+augroup filetype_specific
   autocmd!
   autocmd FileType go setlocal noexpandtab tabstop=4 shiftwidth=4
   autocmd FileType python,java setlocal expandtab tabstop=4 shiftwidth=4 softtabstop=4
@@ -134,20 +134,20 @@ augroup END
 " Basic key mapping {{{
 let mapleader = ','
 let maplocalleader = ' '
-" Visual shifting (does not exit Visual mode)
+" visual 模式下移动代码块
 vnoremap < <gv
 vnoremap > >gv
-" Communicating with os clipboard
+" 与系统剪切板交互
 nnoremap <localleader>y "*y
 vnoremap <localleader>y "*y
 nnoremap <localleader>d "*d
 vnoremap <localleader>d "*d
 nnoremap <localleader>p "*p
 vnoremap <localleader>p "*p
-" Quickly open and reload vimrc file
+" 快速打开、重载 init.vim 文件
 nnoremap <leader>ev :split $MYVIMRC<CR>
 nnoremap <leader>sv :source $MYVIMRC<CR>
-" Quickly clear highlighting
+" 清除高亮
 nnoremap <backspace> :nohl<CR>
 " }}}
 
@@ -162,9 +162,13 @@ endif
 " ale {{{
 if CheckPlug('ale')
   let g:ale_sign_column_always = 1
+  let g:ale_sign_error = '✘'
+  let g:ale_sign_warning = '⚠'
+  highlight ALEErrorSign ctermbg=NONE ctermfg=red
+  highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
   nmap <silent> <localleader>j <Plug>(ale_next_wrap)
   nmap <silent> <localleader>k <Plug>(ale_previous_wrap)
-  let g:ale_c_build_dir='build'
+  let g:ale_c_build_dir = 'build'
 endif
 " }}}
 
@@ -240,7 +244,13 @@ endif
 
 " youcompleteme {{{
 if CheckPlug('YouCompleteMe')
-  let g:ycm_global_ycm_extra_conf=expand('<sfile>:p:h') . '/global_extra_conf.py'
+  " 全局 ycm_extra_conf.py 文件，和 init.vim 同目录
+  let g:ycm_global_ycm_extra_conf = expand('<sfile>:p:h') . '/global_extra_conf.py'
+  " 关闭 ycm 诊断信息，用 ale 的
+  let g:ycm_show_diagnostics_ui = 0
+  " 映射按键, 没有这个会导致其他插件的 tab 不能用
+  inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>"
+  autocmd InsertLeave * if pumvisible() == 0|pclose|endif
   nnoremap gd :YcmCompleter GoTo<CR>
   nnoremap gi :YcmCompleter GetType<CR>
   nnoremap gD :YcmCompleter GetDoc<CR>
