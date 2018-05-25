@@ -81,7 +81,8 @@ call plug#end()
 set background=light
 if CheckPlug('vim-colorschemes')
   " colorscheme monochrome
-  colorscheme Tomorrow-Night-Bright
+  " colorscheme Tomorrow-Night-Bright
+  colorscheme Tomorrow-Night
 else
   colorscheme desert
 endif
@@ -162,12 +163,14 @@ endif
 " ale {{{
 if CheckPlug('ale')
   let g:ale_sign_column_always = 1
-  let g:ale_sign_error = '✘'
-  let g:ale_sign_warning = '⚠'
-  highlight ALEErrorSign ctermbg=NONE ctermfg=red
-  highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
+  let g:airline#extensions#ale#enabled = 1
+  " 仅在保存时进行检查
+  let g:ale_lint_on_text_changed = 'never'
   nmap <silent> <localleader>j <Plug>(ale_next_wrap)
   nmap <silent> <localleader>k <Plug>(ale_previous_wrap)
+  let g:ale_linters = {
+        \   'cpp': ['clang'],
+        \}
   let g:ale_c_build_dir = 'build'
 endif
 " }}}
@@ -246,10 +249,10 @@ endif
 if CheckPlug('YouCompleteMe')
   " 全局 ycm_extra_conf.py 文件，和 init.vim 同目录
   let g:ycm_global_ycm_extra_conf = expand('<sfile>:p:h') . '/global_extra_conf.py'
-  " 关闭 ycm 诊断信息，用 ale 的
-  let g:ycm_show_diagnostics_ui = 0
   " 映射按键, 没有这个会导致其他插件的 tab 不能用
   inoremap <expr> <CR> pumvisible() ? "\<C-y>" : "\<CR>"
+  " 关闭诊断信息，使用 ALE
+  let g:ycm_show_diagnostics_ui = 0
   nnoremap gd :YcmCompleter GoTo<CR>
   nnoremap gi :YcmCompleter GetType<CR>
   nnoremap gD :YcmCompleter GetDoc<CR>
