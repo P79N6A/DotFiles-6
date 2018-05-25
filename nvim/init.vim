@@ -105,11 +105,9 @@ set smartcase                   " Case sensitive when uc present
 set listchars=tab:›\ ,trail:•,extends:#,nbsp:·
 if has('gui_running')
   set guioptions=               " Remove all disturbance
-  set guifont='Fira Code':h12,Menlo:h12,Dejavu_Sans_Mono:h12,Consolas:h13
+  set guifont='Fira Code':h13,Menlo:h13,Dejavu_Sans_Mono:h13,Consolas:h13
   set guicursor=n-v-c:block-Cursor
   set guicursor+=a:blinkon0
-else
-  let &t_Co = 256
 endif
 " }}}
 
@@ -164,8 +162,8 @@ endif
 " ale {{{
 if CheckPlug('ale')
   let g:ale_sign_column_always = 1
-  nmap <silent> <C-j> <Plug>(ale_next_wrap)
-  nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+  nmap <silent> <localleader>j <Plug>(ale_next_wrap)
+  nmap <silent> <localleader>k <Plug>(ale_previous_wrap)
   let g:ale_c_build_dir='build'
 endif
 " }}}
@@ -176,12 +174,6 @@ if CheckPlug('vim-autoformat')
   let g:formatdef_my_cpp = '"clang-format -style=file"'
   let g:formatters_cpp = ['my_cpp']
 endif
-" }}}
-
-" deoplete {{{
-" if CheckPlug('deoplete.nvim')
-"   let g:deoplete#enable_at_startup = 1
-" endif
 " }}}
 
 " easymotion {{{
@@ -195,7 +187,7 @@ endif
 " fzf {{{
 if CheckPlug('fzf.vim')
 
-  nnoremap <C-p> :Files<CR>
+  nnoremap <localleader>fo :Files<CR>
   nnoremap ; :Buffers<CR>
   nnoremap ' :Ag<CR>
 
@@ -207,23 +199,6 @@ if CheckPlug('fzf.vim')
 endif
 " }}}
 
-" neomake {{{
-" if CheckPlug('neomake')
-"   call neomake#configure#automake('nrwi', 500)
-"   let g:neomake_open_list = 2
-"
-"   let linter = neomake#makers#ft#cpp#clang()
-"   function linter.fn(jobinfo) abort
-"     let maker = copy(self)
-"     if filereadable('.clang')
-"       let maker.args += split(join(readfile('.clang'), "\n"))
-"     endif
-"     return maker
-"   endfunction
-"   let g:neomake_cpp_clang_maker = linter
-" endif
-" }}}
-
 " nerdcommenter {{{
 if CheckPlug('nerdcommenter')
   let g:NERDSpaceDelims = 1
@@ -232,7 +207,7 @@ endif
 
 " nerdtree {{{
 if CheckPlug('nerdtree')
-  nnoremap  <leader>nt :NERDTreeToggle<CR>
+  nnoremap  <localleader>ft :NERDTreeToggle<CR>
   let NERDTreeShowHidden = 1
   autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 endif
@@ -246,7 +221,7 @@ endif
 
 " tagbar {{{
 if CheckPlug('tagbar')
-  nnoremap <leader>tt :TagbarToggle<CR>
+  nnoremap <localleader>tt :TagbarToggle<CR>
   let g:tagbar_autofocus = 1
 endif
 " }}}
@@ -259,7 +234,7 @@ endif
 
 " undotree {{{
 if CheckPlug('undotree')
-  nnoremap <leader>ut :UndotreeToggle<CR>
+  nnoremap <localleader>ut :UndotreeToggle<CR>
 endif
 " }}}
 
@@ -267,8 +242,8 @@ endif
 if CheckPlug('YouCompleteMe')
   let g:ycm_global_ycm_extra_conf=expand('<sfile>:p:h') . '/global_extra_conf.py'
   nnoremap gd :YcmCompleter GoTo<CR>
-  nnoremap gt :YcmCompleter GetType<CR>
-  nnoremap gi :YcmCompleter GetDoc<CR>
+  nnoremap gi :YcmCompleter GetType<CR>
+  nnoremap gD :YcmCompleter GetDoc<CR>
 endif
 " }}}
 
@@ -278,9 +253,9 @@ endif
 
 " CPP {{{
 augroup filetype_cpp
-  autocmd FileType c,cpp nnoremap <localleader>r :!cd build && make run<CR>
-  autocmd FileType c,cpp nnoremap <localleader>t :!cd build && make test<CR>
-  autocmd FileType c,cpp nnoremap <localleader>b :!cd build && make<CR>
+  autocmd FileType c,cpp nnoremap <localleader>mb :!cd build && make<CR>
+  autocmd FileType c,cpp nnoremap <localleader>mr :!cd build && make run<CR>
+  autocmd FileType c,cpp nnoremap <localleader>mt :!cd build && make test<CR>
 augroup END
 " }}}
 
@@ -293,9 +268,9 @@ if CheckPlug('vim-go')
   let g:go_fmt_command = "goimports"
   augroup filetype_go
     autocmd!
-    autocmd FileType go nmap <localleader>b <Plug>(go-build)
-    autocmd FileType go nmap <localleader>r <Plug>(go-run)
-    autocmd FileType go nmap <localleader>t <Plug>(go-test)
+    autocmd FileType go nmap <localleader>mb <Plug>(go-build)
+    autocmd FileType go nmap <localleader>mr <Plug>(go-run)
+    autocmd FileType go nmap <localleader>mt <Plug>(go-test)
   augroup END
 endif
 " }}}
@@ -303,8 +278,8 @@ endif
 " Python {{{
 augroup filetype_python
   autocmd!
-  autocmd FileType python nnoremap <localleader>r :!python %<CR>
-  autocmd FileType python nnoremap <localleader>t :!python -m doctest -v %<CR>
+  autocmd FileType python nnoremap <localleader>mr :!python %<CR>
+  autocmd FileType python nnoremap <localleader>mt :!python -m doctest -v %<CR>
 augroup END
 " }}}
 
