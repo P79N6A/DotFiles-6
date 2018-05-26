@@ -37,10 +37,10 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'Yggdroot/indentLine'
 
 " Coding
-Plug 'chiel92/vim-autoformat'
 Plug 'jiangmiao/auto-pairs'
 Plug 'tpope/vim-surround'
 Plug 'ervandew/supertab'
+Plug 'sbdchd/neoformat'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'majutsushi/tagbar'
@@ -66,7 +66,7 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 
 " Language Plugins {{{
 
-" CPP
+" C++
 Plug 'octol/vim-cpp-enhanced-highlight', { 'for': ['cpp'] }
 
 " Go
@@ -175,14 +175,6 @@ if CheckPlug('ale')
 endif
 " }}}
 
-" autoformat {{{
-if CheckPlug('vim-autoformat')
-  autocmd BufWrite * :Autoformat
-  let g:formatdef_my_cpp = '"clang-format -style=file"'
-  let g:formatters_cpp = ['my_cpp']
-endif
-" }}}
-
 " easymotion {{{
 if CheckPlug('vim-easymotion')
   map <leader> <Plug>(easymotion-prefix)
@@ -199,10 +191,24 @@ if CheckPlug('fzf.vim')
   nnoremap ' :Ag<CR>
 
   augroup filetype_fzf
-    autocmd! FileType fzf
-    autocmd  FileType fzf set laststatus=0 noshowmode
+    autocmd!
+    autocmd FileType fzf set laststatus=0 noshowmode
           \| autocmd BufLeave <buffer> set laststatus=2 showmode
   augroup END
+endif
+" }}}
+
+" neoformat {{{
+if CheckPlug('neoformat')
+  augroup fmt
+    autocmd!
+    autocmd BufWritePre * undojoin | Neoformat
+	augroup END
+
+  " C++ 的 clang-format 调用了 C 的来实现
+	let g:neoformat_c_clangformat = {
+          \ 'args': ['-style=file'],
+          \ }
 endif
 " }}}
 
@@ -263,8 +269,9 @@ endif
 
 " Language Settings {{{
 
-" CPP {{{
+" C++ {{{
 augroup filetype_cpp
+  autocmd!
   autocmd FileType c,cpp nnoremap <localleader>mb :!cd build && make<CR>
   autocmd FileType c,cpp nnoremap <localleader>mr :!cd build && make run<CR>
   autocmd FileType c,cpp nnoremap <localleader>mt :!cd build && make test<CR>
