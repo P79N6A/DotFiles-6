@@ -1,7 +1,7 @@
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/zhiruili/.oh-my-zsh
 
-ZSH_THEME="robbyrussell"
+ZSH_THEME="geoffgarside"
 DEFAULT_USER="zhiruili"
 
 # Disable marking untracked files under VCS as dirty.
@@ -55,6 +55,8 @@ export PATH=$PATH:$HOME/.cargo/bin
 # go-lang
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
+# llvm
+export PATH=/usr/local/opt/llvm/bin:$PATH
 
 # proxy settings
 export http_proxy=http://127.0.0.1:1087;
