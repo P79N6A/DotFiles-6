@@ -45,7 +45,6 @@ source $ZSH/oh-my-zsh.sh
 alias typora="open -a typora"
 alias finder="open -a finder"
 alias python="python3"
-alias vi="nvim"
 alias vim="nvim"
 
 # stack
@@ -70,7 +69,4 @@ export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 
 # autojump
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
-
-# temp path to depot_tools for chromium project
-# export PATH="$PATH:/Users/zhiruili/Projects/depot_tools";
 
