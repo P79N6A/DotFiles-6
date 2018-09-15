@@ -29,6 +29,8 @@ vnoremap < <gv
 vnoremap > >gv
 " 清除高亮
 nnoremap <backspace> :nohl<CR>
+
+" KJump
 nnoremap ,f :action KJumpAction<cr>
 nnoremap ,F :action KJumpAction<cr>
 nnoremap ,w :action KJumpAction.Word0<cr>
@@ -37,30 +39,30 @@ nnoremap ,j :action KJumpAction.Line<cr>
 nnoremap ,k :action KJumpAction.Line<cr>
 
 " File
+nnoremap <leader>pf :action GotoFile<cr>
 nnoremap <leader>ff :action GotoFile<cr>
-nnoremap <leader>fs :action SearchEverywhere<cr>
-nnoremap <leader>fs :action FindInPath<cr>
+nnoremap <leader>ss :action SearchEverywhere<cr>
+nnoremap <leader>sd :action FindInPath<cr>
 
 " Tags
 nnoremap <leader>tt :action FileStructurePopup<cr>
 nnoremap <leader>to :action GotoSymbol<cr>
 
-" Code
-nnoremap <leader>cuu :action FindUsagesInFile<cr>
-nnoremap <leader>cuU :action FindUsages<cr>
-nnoremap <leader>cuh :action HighlightUsagesInFile<cr>
-nnoremap <leader>cbb :action ToggleLineBreakpoint<cr>
-nnoremap <leader>cbe :action ToggleBreakpointEnabled<cr>
-nnoremap <leader>cmb :action Build<cr>
-nnoremap <leader>cmd :action Debug<cr>
-nnoremap <leader>cmr :action Run<cr>
-nnoremap <leader>cmr :action Run<cr>
+" Lang
+nnoremap <leader>lr :action FindUsagesInFile<cr>
+nnoremap <leader>lR :action FindUsages<cr>
+nnoremap <leader>lf :action HighlightUsagesInFile<cr>
+nnoremap <leader>ltb :action ToggleLineBreakpoint<cr>
+nnoremap <leader>leb :action ToggleBreakpointEnabled<cr>
+nnoremap <leader>lb :action Build<cr>
+nnoremap <leader>ld :action Debug<cr>
+nnoremap <leader>lx :action Run<cr>
 
 " Goto
-nnoremap <leader>ga :action GotoAction<cr>
-nnoremap <leader>gc :action GotoClass<cr>
-nnoremap <leader>gd :action GotoImplementation<cr>
-nnoremap <leader>gD :action GotoDeclaration<cr>
+nnoremap ga :action GotoAction<cr>
+nnoremap gc :action GotoClass<cr>
+nnoremap gd :action GotoImplementation<cr>
+nnoremap gD :action GotoDeclaration<cr>
 
 set surround                    " 使用 vim-surround
 
