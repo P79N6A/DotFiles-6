@@ -31,22 +31,17 @@ vnoremap > >gv
 nnoremap <backspace> :nohl<CR>
 
 " KJump
-nnoremap ,f :action KJumpAction<cr>
-nnoremap ,F :action KJumpAction<cr>
-nnoremap ,w :action KJumpAction.Word0<cr>
-nnoremap ,b :action KJumpAction.Word0<cr>
-nnoremap ,j :action KJumpAction.Line<cr>
-nnoremap ,k :action KJumpAction.Line<cr>
+nnoremap <leader>jj :action KJumpAction<cr>
+nnoremap <leader>jw :action KJumpAction.Word0<cr>
+nnoremap <leader>jl :action KJumpAction.Line<cr>
+nnoremap <leader>jI :action GotoSymbol<cr>
+nnoremap <leader>ji :action FileStructurePopup<cr>
 
 " File
 nnoremap <leader>pf :action GotoFile<cr>
 nnoremap <leader>ff :action GotoFile<cr>
 nnoremap <leader>ss :action SearchEverywhere<cr>
 nnoremap <leader>sd :action FindInPath<cr>
-
-" Tags
-nnoremap <leader>tt :action FileStructurePopup<cr>
-nnoremap <leader>to :action GotoSymbol<cr>
 
 " Lang
 nnoremap <leader>lr :action FindUsagesInFile<cr>
