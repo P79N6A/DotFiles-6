@@ -45,22 +45,32 @@ source $ZSH/oh-my-zsh.sh
 alias typora="open -a typora"
 alias finder="open -a finder"
 alias python="python3"
-alias vim="nvim"
 
-# stack
+# Use Neovim as "preferred editor"
+export VISUAL=nvim
+# Stack
 export PATH=$PATH:$HOME/.local/bin
-# cargo
+# Cargo
 export PATH=$PATH:$HOME/.cargo/bin
 # go-lang
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
-# llvm
+# LLVM
 export PATH=/usr/local/opt/llvm/bin:$PATH
+# NeoVim
+alias vim="nvim"
+# export VIMCONFIG=~/.config/nvim
+# export VIMDATA=~/.local/share/nvim
+# SpaceVim
+export PATH=$PATH:$HOME/.SpaceVim/bin
 
 # proxy settings
-export http_proxy=http://127.0.0.1:1087;
-export https_proxy=http://127.0.0.1:1087;
-export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1087"
+# export http_proxy=http://127.0.0.1:1087;
+# export https_proxy=http://127.0.0.1:1087;
+# export JAVA_OPTS="$JAVA_OPTS -Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=1087"
+export http_proxy='http://web-proxy.tencent.com:8080'
+export https_proxy='http://web-proxy.tencent.com:8080'
+export JAVA_OPTS='$JAVA_OPTS -Dhttp.proxyHost=proxy.tencent.com -Dhttp.proxyPort=8080'
 
 # fzf
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
@@ -70,3 +80,5 @@ export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 # autojump
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
 
+
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
