@@ -30,12 +30,16 @@ vnoremap > >gv
 " 清除高亮
 nnoremap <backspace> :nohl<CR>
 
-" KJump
+" Jump
+nnoremap <leader>ji :action FileStructurePopup<cr>
+nnoremap <leader>jI :action GotoSymbol<cr>
+nnoremap <leader>jf :action Forward<cr>
+nnoremap <leader>jb :action Back<cr>
+" Jump - KJump
 nnoremap <leader>jj :action KJumpAction<cr>
 nnoremap <leader>jw :action KJumpAction.Word0<cr>
 nnoremap <leader>jl :action KJumpAction.Line<cr>
-nnoremap <leader>jI :action GotoSymbol<cr>
-nnoremap <leader>ji :action FileStructurePopup<cr>
+
 
 " File
 nnoremap <leader>pf :action GotoFile<cr>
