@@ -28,24 +28,25 @@ vnoremap <leader><leader>p "*p
 vnoremap < <gv
 vnoremap > >gv
 " 清除高亮
-nnoremap <backspace> :nohl<CR>
+nnoremap <backspace> :nohl<cr>
 
-" Jump
-nnoremap <leader>ji :action FileStructurePopup<cr>
-nnoremap <leader>jI :action GotoSymbol<cr>
-nnoremap <leader>jf :action Forward<cr>
-nnoremap <leader>jb :action Back<cr>
-" Jump - KJump
+" KJump
 nnoremap <leader>jj :action KJumpAction<cr>
 nnoremap <leader>jw :action KJumpAction.Word0<cr>
 nnoremap <leader>jl :action KJumpAction.Line<cr>
-
+nnoremap <leader>jI :action GotoSymbol<cr>
+nnoremap <leader>ji :action FileStructurePopup<cr>
 
 " File
 nnoremap <leader>pf :action GotoFile<cr>
 nnoremap <leader>ff :action GotoFile<cr>
+nnoremap <leader>fr :action RecentFiles<cr>
+nnoremap <leader>fR :action RenameFile<cr>
 nnoremap <leader>ss :action SearchEverywhere<cr>
 nnoremap <leader>sd :action FindInPath<cr>
+
+" Buffer
+nnoremap <leader>bf :action ReformatCode<cr>
 
 " Lang
 nnoremap <leader>lr :action FindUsagesInFile<cr>
