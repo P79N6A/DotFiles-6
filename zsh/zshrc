@@ -1,7 +1,8 @@
 # Path to your oh-my-zsh installation.
 export ZSH=/Users/zhiruili/.oh-my-zsh
 
-ZSH_THEME="geoffgarside"
+ZSH_THEME="robbyrussell"
+RPROMPT="[%*]"
 DEFAULT_USER="zhiruili"
 
 # Disable marking untracked files under VCS as dirty.
